@@ -1,18 +1,8 @@
 CREATE UNIQUE INDEX IF NOT EXISTS  pk_egcl_bankaccountservicemapping ON public.egcl_bankaccountservicemapping USING btree (id);
-CREATE INDEX IF NOT EXISTS  idx_ins_transactionnumber ON public.egcl_instrumentheader USING btree (transactionnumber);
-CREATE UNIQUE INDEX IF NOT EXISTS  pk_egcl_instrumenthead ON public.egcl_instrumentheader USING btree (id);
 CREATE INDEX IF NOT EXISTS  idx_ins_transactionnumber_v1 ON public.egcl_instrumentheader_v1 USING btree (transactionnumber);
 CREATE UNIQUE INDEX IF NOT EXISTS  pk_egcl_instrumenthead_v1 ON public.egcl_instrumentheader_v1 USING btree (id);
-CREATE UNIQUE INDEX IF NOT EXISTS  pk_egcl_receiptdetails ON public.egcl_receiptdetails USING btree (id);
 CREATE INDEX IF NOT EXISTS  idx_receiptdetails_v1_receiptheader ON public.egcl_receiptdetails_v1 USING btree (receiptheader);
 CREATE UNIQUE INDEX IF NOT EXISTS  pk_egcl_receiptdetails_v1 ON public.egcl_receiptdetails_v1 USING btree (id);
-CREATE INDEX IF NOT EXISTS  idx_rcpthd_business ON public.egcl_receiptheader USING btree (businessdetails);
-CREATE INDEX IF NOT EXISTS  idx_rcpthd_consumercode ON public.egcl_receiptheader USING btree (consumercode);
-CREATE INDEX IF NOT EXISTS  idx_rcpthd_mreceiptnumber ON public.egcl_receiptheader USING btree (manualreceiptnumber);
-CREATE INDEX IF NOT EXISTS  idx_rcpthd_refno ON public.egcl_receiptheader USING btree (referencenumber);
-CREATE INDEX IF NOT EXISTS  idx_rcpthd_status ON public.egcl_receiptheader USING btree (status);
-CREATE INDEX IF NOT EXISTS  idx_rcpthd_transactionid ON public.egcl_receiptheader USING btree (transactionid);
-CREATE UNIQUE INDEX IF NOT EXISTS  pk_egcl_receiptheader ON public.egcl_receiptheader USING btree (id);
 CREATE INDEX IF NOT EXISTS  idx_rcpthd_v1_business ON public.egcl_receiptheader_v1 USING btree (businessdetails);
 CREATE INDEX IF NOT EXISTS  idx_rcpthd_v1_consumercode ON public.egcl_receiptheader_v1 USING btree (consumercode);
 CREATE INDEX IF NOT EXISTS  idx_rcpthd_v1_mreceiptnumber ON public.egcl_receiptheader_v1 USING btree (manualreceiptnumber);
@@ -20,8 +10,6 @@ CREATE INDEX IF NOT EXISTS  idx_rcpthd_v1_refno ON public.egcl_receiptheader_v1 
 CREATE INDEX IF NOT EXISTS  idx_rcpthd_v1_status ON public.egcl_receiptheader_v1 USING btree (status);
 CREATE INDEX IF NOT EXISTS  idx_rcpthd_v1_transactionid ON public.egcl_receiptheader_v1 USING btree (transactionid);
 CREATE UNIQUE INDEX IF NOT EXISTS  pk_egcl_receiptheader_v1 ON public.egcl_receiptheader_v1 USING btree (id);
-CREATE INDEX IF NOT EXISTS  idx_receiptinstrument_instrumentheader ON public.egcl_receiptinstrument USING btree (instrumentheader);
-CREATE INDEX IF NOT EXISTS  idx_receiptinstrument_receiptheader ON public.egcl_receiptinstrument USING btree (receiptheader);
 CREATE INDEX IF NOT EXISTS  idx_receiptinstrument_v1_instrumentheader ON public.egcl_receiptinstrument_v1 USING btree (instrumentheader);
 CREATE INDEX IF NOT EXISTS  idx_receiptinstrument_v1_receiptheader ON public.egcl_receiptinstrument_v1 USING btree (receiptheader);
 CREATE UNIQUE INDEX IF NOT EXISTS  pk_egcl_remittance ON public.egcl_remittance USING btree (id);
