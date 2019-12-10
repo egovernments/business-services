@@ -2,13 +2,10 @@ package org.egov.demand.web.controller;
 
 import javax.validation.Valid;
 
-import org.egov.common.contract.request.RequestInfo;
-import org.egov.common.contract.response.ErrorResponse;
 import org.egov.demand.model.TaxHeadMasterCriteria;
 import org.egov.demand.service.TaxHeadMasterService;
 import org.egov.demand.web.contract.RequestInfoWrapper;
 import org.egov.demand.web.contract.TaxHeadMasterResponse;
-import org.egov.demand.web.contract.factory.ResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +27,6 @@ public class TaxHeadMasterController {
 	@Autowired
 	private TaxHeadMasterService taxHeadMasterService;
 
-	@Autowired
-	private ResponseFactory responseFactory;
-
 	@PostMapping("_search")
 	@ResponseBody
 	public ResponseEntity<?> search(@RequestBody @Valid final RequestInfoWrapper requestInfoWrapper,
@@ -40,11 +34,7 @@ public class TaxHeadMasterController {
 			final BindingResult bindingResult) {
 		
 		log.info("taxHeadMasterCriteria::" + taxHeadMasterCriteria + "requestInfoWrapper::" + requestInfoWrapper);
-		RequestInfo requestInfo = requestInfoWrapper.getRequestInfo();
-		if (bindingResult.hasErrors()) {
-			final ErrorResponse errorResponse = responseFactory.getErrorResponse(bindingResult, requestInfo);
-			return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-		}
+
 		final TaxHeadMasterResponse taxHeadMasterResponse = taxHeadMasterService.getTaxHeads(taxHeadMasterCriteria,
 				requestInfoWrapper.getRequestInfo());
 		return new ResponseEntity<>(taxHeadMasterResponse, HttpStatus.OK);

@@ -41,12 +41,10 @@ package org.egov.demand.web.controller;
 
 import javax.validation.Valid;
 
-import org.egov.common.contract.response.ErrorResponse;
 import org.egov.demand.service.BusinessServDetailService;
 import org.egov.demand.web.contract.BusinessServiceDetailCriteria;
 import org.egov.demand.web.contract.BusinessServiceDetailResponse;
 import org.egov.demand.web.contract.RequestInfoWrapper;
-import org.egov.demand.web.contract.factory.ResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,19 +66,12 @@ public class BusinessServiceDetailController {
     @Autowired
     private BusinessServDetailService businessServDetailService;
 
-    @Autowired
-    private ResponseFactory responseFactory;
-
     @PostMapping("_search")
     @ResponseBody
     public ResponseEntity<?> search(@RequestBody @Valid final RequestInfoWrapper requestInfoWrapper,
                                     @ModelAttribute @Valid final BusinessServiceDetailCriteria BusinessServiceDetailsCriteria, final BindingResult bindingResult) {
         log.info("BusinessServiceDetailsCriteria -> " + BusinessServiceDetailsCriteria + "requestInfoWrapper -> " + requestInfoWrapper);
 
-        if (bindingResult.hasErrors()) {
-            final ErrorResponse errorResponse = responseFactory.getErrorResponse(bindingResult, requestInfoWrapper.getRequestInfo());
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-        }
         final BusinessServiceDetailResponse businessServiceDetailResponse = businessServDetailService.searchBusinessServiceDetails(BusinessServiceDetailsCriteria, requestInfoWrapper.getRequestInfo());
         return new ResponseEntity<>(businessServiceDetailResponse, HttpStatus.OK);
     }

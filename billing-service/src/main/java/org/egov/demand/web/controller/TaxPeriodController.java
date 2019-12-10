@@ -41,12 +41,10 @@ package org.egov.demand.web.controller;
 
 import javax.validation.Valid;
 
-import org.egov.common.contract.response.ErrorResponse;
 import org.egov.demand.service.TaxPeriodService;
 import org.egov.demand.web.contract.RequestInfoWrapper;
 import org.egov.demand.web.contract.TaxPeriodCriteria;
 import org.egov.demand.web.contract.TaxPeriodResponse;
-import org.egov.demand.web.contract.factory.ResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,19 +66,12 @@ public class TaxPeriodController {
     @Autowired
     private TaxPeriodService taxPeriodService;
 
-    @Autowired
-    private ResponseFactory responseFactory;
-
     @PostMapping("_search")
     @ResponseBody
     public ResponseEntity<?> search(@RequestBody @Valid final RequestInfoWrapper requestInfoWrapper,
                                     @ModelAttribute @Valid final TaxPeriodCriteria taxPeriodCriteria, final BindingResult bindingResult) {
         log.info("taxPeriodCriteria -> " + taxPeriodCriteria + "requestInfoWrapper -> " + requestInfoWrapper);
 
-        if (bindingResult.hasErrors()) {
-            final ErrorResponse errorResponse = responseFactory.getErrorResponse(bindingResult, requestInfoWrapper.getRequestInfo());
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-        }
         final TaxPeriodResponse taxPeriodResponse = taxPeriodService.searchTaxPeriods(taxPeriodCriteria, requestInfoWrapper.getRequestInfo());
         return new ResponseEntity<>(taxPeriodResponse, HttpStatus.OK);
     }
