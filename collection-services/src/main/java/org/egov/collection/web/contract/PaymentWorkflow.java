@@ -9,14 +9,14 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class ReceiptWorkflow {
+public class PaymentWorkflow {
 
     @NotNull
     @Length(min = 1)
-    private String receiptNumber;
+    private String paymentId;
 
     @NotNull
-    private ReceiptAction action;
+    private PaymentAction action;
 
     @NotNull
     @Length(min = 1)
@@ -28,20 +28,20 @@ public class ReceiptWorkflow {
     /**
      * Current status of the transaction
      */
-    public enum ReceiptAction {
+    public enum PaymentAction {
         CANCEL("CANCEL"),
         DISHONOUR("DISHONOUR"),
         REMIT("REMIT");
 
         private String value;
 
-        ReceiptAction(String value) {
+        PaymentAction(String value) {
             this.value = value;
         }
 
         @JsonCreator
-        public static ReceiptAction fromValue(String text) {
-            for (ReceiptAction b : ReceiptAction.values()) {
+        public static PaymentAction fromValue(String text) {
+            for (PaymentAction b : PaymentAction.values()) {
                 if (String.valueOf(b.value).equals(text)) {
                     return b;
                 }
@@ -55,5 +55,6 @@ public class ReceiptWorkflow {
             return String.valueOf(value);
         }
     }
+
 
 }

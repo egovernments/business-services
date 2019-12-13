@@ -9,14 +9,15 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
-public class ReceiptWorkflowRequest {
+public class PaymentWorkflowRequest {
 
     @JsonProperty("RequestInfo")
     private RequestInfo requestInfo;
 
-    @JsonProperty("ReceiptWorkflow")
+    @JsonProperty("PaymentWorkflows")
     @Size(min = 1)
     @Valid
-    private List<ReceiptWorkflow> receiptWorkflow;
+    private List<PaymentWorkflow> paymentWorkflows;
+
 
 }
