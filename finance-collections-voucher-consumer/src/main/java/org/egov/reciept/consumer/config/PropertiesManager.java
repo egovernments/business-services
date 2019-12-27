@@ -152,8 +152,17 @@ public class PropertiesManager {
     @Value("${egov.collection.receipt.voucher.cancel.topic}")
     private String voucherCancelTopic;
     
+    @Value("${kafka.topics.payment.create.name}")
+    private String createPaymentTopicName;
+    
+    @Value("${kafka.topics.payment.cancel.name}")
+    private String cancelPaymentTopicName;
+    
     private String siAuthToken;
     private User siUserInfo;
+    
+    @Value("${egov.services.egf.instrument.instruments.search}")
+    private String instrumentSearch;
     
     public String getErpURLBytenantId(String tenantId) throws VoucherCustomException {
     	try {
