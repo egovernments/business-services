@@ -163,7 +163,7 @@ public class CollectionsQueryBuilder {
         sqlParameterSource.addValue("payermobile", bill.getMobileNumber());
         sqlParameterSource.addValue("payerid", bill.getPayerId());
         sqlParameterSource.addValue("paidby", bill.getPaidBy());
-        sqlParameterSource.addValue("referencenumber", billDetail.getBillNumber());
+        sqlParameterSource.addValue("referencenumber", bill.getId());
         sqlParameterSource.addValue("receipttype", billDetail.getReceiptType().toString());
         sqlParameterSource.addValue("receiptnumber", billDetail.getReceiptNumber());
         sqlParameterSource.addValue("receiptdate", billDetail.getReceiptDate());
