@@ -40,14 +40,7 @@
 
 package org.egov.collection.web.controller;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.validation.Valid;
-
+import lombok.extern.slf4j.Slf4j;
 import org.egov.collection.model.ReceiptSearchCriteria;
 import org.egov.collection.model.enums.ReceiptStatus;
 import org.egov.collection.service.CollectionService;
@@ -65,16 +58,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import lombok.extern.slf4j.Slf4j;
+import javax.validation.Valid;
+import java.util.*;
 
 @RestController
 @RequestMapping("/receipts")
@@ -165,6 +152,18 @@ public class ReceiptController {
 
 		Map<String, String> resultMap = migrationService.migrateToV1(startBatch, batchSizeInput);
 		return new ResponseEntity<>(resultMap, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/_plainsearch", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<ReceiptRes> plainSearch(@ModelAttribute ReceiptSearchCriteria receiptSearchCriteria,
+											 @RequestBody @Valid final RequestInfoWrapper requestInfoWrapper) {
+
+		final RequestInfo requestInfo = requestInfoWrapper.getRequestInfo();
+
+		List<Receipt> receipts = collectionService.plainSearch(receiptSearchCriteria);
+
+		return getSuccessResponse(receipts, requestInfo);
 	}
 
 	private ResponseEntity<ReceiptRes> getSuccessResponse(List<Receipt> receipts, RequestInfo requestInfo) {

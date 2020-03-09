@@ -10,12 +10,16 @@ import org.egov.collection.web.contract.BillDetail;
 import org.egov.collection.web.contract.Receipt;
 import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.egov.collection.repository.querybuilder.CollectionsQueryBuilder.*;
 
@@ -144,6 +148,18 @@ public class CollectionRepository {
         List<Receipt> receipts = namedParameterJdbcTemplate.query(query, preparedStatementValues,
                 collectionResultSetExtractor);
         return receipts;
+    }
+
+    public List<String> fetchReceiptIds(ReceiptSearchCriteria receiptSearchCriteria){
+
+        Map<String, Object> preparedStatementValues = new HashMap<>();
+        preparedStatementValues.put("offset", receiptSearchCriteria.getOffset());
+        preparedStatementValues.put("limit", receiptSearchCriteria.getLimit());
+
+        return namedParameterJdbcTemplate.query("SELECT id from egcl_receiptheader_v1 offset :offset " +
+                        "limit :limit",
+                preparedStatementValues,
+                new SingleColumnRowMapper<>(String.class));
     }
 
 }

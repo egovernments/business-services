@@ -1,12 +1,6 @@
 package org.egov.collection.service;
 
-import static java.util.Objects.isNull;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.egov.collection.config.ApplicationProperties;
 import org.egov.collection.model.ReceiptSearchCriteria;
@@ -26,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
+
+import static java.util.Objects.isNull;
 
 @Service
 @Slf4j
@@ -90,6 +86,27 @@ public class CollectionService {
         List<Receipt> receipts = collectionRepository.fetchReceipts(receiptSearchCriteria);
 
         return receipts;
+    }
+
+    public List<Receipt> plainSearch(ReceiptSearchCriteria receiptSearchCriteria) {
+
+        ReceiptSearchCriteria searchCriteria = new ReceiptSearchCriteria();
+
+        if (applicationProperties.isReceiptsSearchPaginationEnabled()) {
+            searchCriteria.setOffset(isNull(receiptSearchCriteria.getOffset()) ? 0 : receiptSearchCriteria.getOffset());
+            searchCriteria.setLimit(isNull(receiptSearchCriteria.getLimit()) ? applicationProperties.getReceiptsSearchDefaultLimit() :
+                    receiptSearchCriteria.getLimit());
+        } else {
+            searchCriteria.setOffset(0);
+            searchCriteria.setLimit(applicationProperties.getReceiptsSearchDefaultLimit());
+        }
+
+        List<String> ids = collectionRepository.fetchReceiptIds(searchCriteria);
+        if(ids.isEmpty())
+            return Collections.emptyList();
+
+        ReceiptSearchCriteria criteria = ReceiptSearchCriteria.builder().ids(ids).build();
+        return collectionRepository.fetchReceipts(criteria);
     }
 
     /**
