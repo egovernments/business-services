@@ -156,7 +156,8 @@ public class CollectionRepository {
         preparedStatementValues.put("offset", receiptSearchCriteria.getOffset());
         preparedStatementValues.put("limit", receiptSearchCriteria.getLimit());
 
-        return namedParameterJdbcTemplate.query("SELECT id from egcl_receiptheader_v1 offset :offset " +
+        return namedParameterJdbcTemplate.query("SELECT id from egcl_receiptheader_v1 ORDER BY receiptdate offset " +
+                        ":offset " +
                         "limit :limit",
                 preparedStatementValues,
                 new SingleColumnRowMapper<>(String.class));
