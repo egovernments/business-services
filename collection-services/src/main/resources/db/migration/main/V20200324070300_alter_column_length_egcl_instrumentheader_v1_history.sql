@@ -1,1 +1,0 @@
-ALTER TABLE egcl_instrumentheader_v1_history ALTER COLUMN payee TYPE varchar(256);
