@@ -17,6 +17,7 @@ import org.egov.egf.instrument.domain.model.InstrumentType;
 import org.egov.egf.instrument.domain.model.TransactionType;
 import org.egov.egf.instrument.persistence.entity.InstrumentEntity;
 import org.egov.egf.instrument.persistence.queue.repository.InstrumentQueueRepository;
+import org.egov.egf.instrument.persistence.repository.DishonorReasonJdbcRepository;
 import org.egov.egf.instrument.persistence.repository.InstrumentJdbcRepository;
 import org.egov.egf.instrument.persistence.repository.InstrumentVoucherJdbcRepository;
 import org.egov.egf.instrument.web.requests.InstrumentRequest;
@@ -50,6 +51,9 @@ public class InstrumentRepositoryTest {
 
     @Mock
     private FinancialConfigurationContractRepository financialConfigurationContractRepository;
+    
+    @Mock
+    private DishonorReasonJdbcRepository dishonorReasonJdbcRepository;
 
     @Captor
     private ArgumentCaptor<InstrumentRequest> captor;
@@ -59,10 +63,10 @@ public class InstrumentRepositoryTest {
     @Before
     public void setup() {
         instrumentRepositoryWithKafka = new InstrumentRepository(instrumentJdbcRepository, instrumentQueueRepository,
-                "yes", instrumentESRepository, financialConfigurationContractRepository, instrumentVoucherJdbcRepository);
+                "yes", instrumentESRepository, financialConfigurationContractRepository, instrumentVoucherJdbcRepository, dishonorReasonJdbcRepository);
 
         instrumentRepositoryWithOutKafka = new InstrumentRepository(instrumentJdbcRepository, instrumentQueueRepository,
-                "no", instrumentESRepository, financialConfigurationContractRepository, instrumentVoucherJdbcRepository);
+                "no", instrumentESRepository, financialConfigurationContractRepository, instrumentVoucherJdbcRepository, dishonorReasonJdbcRepository);
     }
 
     @Test
