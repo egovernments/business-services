@@ -109,7 +109,6 @@ public class InstrumentMapper {
         if (instrument.getDishonorReason() != null){
         	DishonorReason dishonorReason = instrument.getDishonorReason();
         	DishonorReasonContract dishonorReasonContract = new DishonorReasonContract().builder()
-        	.id(dishonorReason.getId())
         	.reason(dishonorReason.getReason())
         	.remarks(dishonorReason.getRemarks())
         	.instrument(dishonorReason.getInstrument())

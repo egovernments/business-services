@@ -1,7 +1,6 @@
 package org.egov.egf.instrument.persistence.repository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,7 +115,7 @@ public class DishonorReasonJdbcRepository extends JdbcRepository {
             if (params.length() > 0)
                 params.append(" and ");
             params.append("instrumentid in (:instrumentids)");
-            paramValues.put("instrumentids", new ArrayList<String>(Arrays.asList(dishonorReasonSearchEntity.getInstrumentid().split(","))));
+            paramValues.put("instrumentids", dishonorReasonSearchEntity.getInstrumentid());
         }
 
         Pagination<DishonorReason> page = new Pagination<>();
