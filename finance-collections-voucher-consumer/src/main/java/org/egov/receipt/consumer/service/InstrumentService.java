@@ -40,12 +40,19 @@
 
 package org.egov.receipt.consumer.service;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.egov.mdms.service.MicroServiceUtil;
+import org.egov.receipt.consumer.model.AccountDetail;
 import org.egov.receipt.consumer.model.FinanceMdmsModel;
 import org.egov.receipt.consumer.model.FinancialStatus;
 import org.egov.receipt.consumer.model.Instrument;
@@ -60,6 +67,7 @@ import org.egov.receipt.consumer.model.ReceiptReq;
 import org.egov.receipt.consumer.model.RequestInfo;
 import org.egov.receipt.consumer.model.Voucher;
 import org.egov.receipt.consumer.model.VoucherResponse;
+import org.egov.receipt.consumer.model.VoucherSearchCriteria;
 import org.egov.receipt.consumer.repository.ServiceRequestRepository;
 import org.egov.receipt.consumer.v2.model.PaymentRequest;
 import org.egov.receipt.custom.exception.VoucherCustomException;
@@ -81,7 +89,7 @@ public class InstrumentService {
 
 	private static final String FINANCE_STATUS_CANCELLED = "Cancelled";
 	
-	private static final String FINANCE_STATUS_DEPOSITED = "Deposited";
+	final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Autowired
 	private PropertiesManager propertiesManager;
@@ -94,6 +102,9 @@ public class InstrumentService {
     
     @Autowired
 	private MicroServiceUtil microServiceUtil;
+    
+    @Autowired
+	private VoucherService voucherService;
 
 	/**
 	 * 
@@ -184,4 +195,20 @@ public class InstrumentService {
 			throw new VoucherCustomException(ProcessStatus.FAILED, String.format("Instrument for Payment : %1$s is not exist", paymentId));
 		}
 	}
+
+	public void processDishonorIntruments(InstrumentRequest request) throws IllegalArgumentException, VoucherCustomException {
+		List<InstrumentContract> instruments = request.getInstruments();
+		VoucherResponse reversalVoucher = voucherService.processReversalVoucher(instruments, request.getRequestInfo());
+		instruments.get(0).getDishonor().setReversalVoucherId(reversalVoucher.getVouchers().get(0).getVoucherNumber());
+//		this.updateInstruments(instruments, request.getRequestInfo());
+	}
+
+	private void updateInstruments(List<InstrumentContract> instruments, RequestInfo requestInfo) throws IllegalArgumentException, VoucherCustomException {
+		StringBuilder url = new StringBuilder(propertiesManager.getInstrumentHostUrl() + propertiesManager.getInstrumentCancel());
+		InstrumentRequest request = new InstrumentRequest();
+		request.setInstruments(instruments);
+		request.setRequestInfo(requestInfo);
+		mapper.convertValue(serviceRequestRepository.fetchResult(url, request, instruments.get(0).getTenantId()), InstrumentResponse.class);
+	}
+	
 }

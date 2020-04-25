@@ -44,7 +44,6 @@ import java.util.List;
 import org.egov.receipt.consumer.model.BusinessService;
 import org.egov.receipt.consumer.model.FinanceMdmsModel;
 import org.egov.receipt.consumer.model.FinancialStatus;
-import org.egov.receipt.consumer.model.Instrument;
 import org.egov.receipt.consumer.model.InstrumentContract;
 import org.egov.receipt.consumer.model.InstrumentSearchContract;
 import org.egov.receipt.consumer.model.RequestInfo;
