@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.egov.receipt.consumer.model.InstrumentContract;
 import org.egov.receipt.consumer.model.InstrumentRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +30,13 @@ public class InstrumentUpdateConsumer {
 			mastersMap = objectMapper.readValue(record.value(), Map.class);
 			if(mastersMap.get("instrument_persisted") != null){
 				InstrumentRequest request = objectMapper.convertValue(mastersMap.get("instrument_persisted"), InstrumentRequest.class);
-				if(request.getRequestInfo().getAction().equals("update") && request.getInstruments().get(0).getFinancialStatus().getCode().equals("Dishonored")){
-					LOGGER.error("instrument with id {} is got requested to dishonored", request.getInstruments().get(0).getId());
-					instrumentService.processDishonorIntruments(request);
+				InstrumentContract contract = request.getInstruments().get(0);
+				if(request.getRequestInfo().getAction().equals("update") && 
+						contract.getFinancialStatus().getCode().equals("Dishonored") && 
+						contract.getDishonor() != null && 
+						contract.getDishonor().getReversalVoucherId() == null){
+						LOGGER.error("instrument with id {} is got requested to dishonored", contract.getId());
+						instrumentService.processDishonorIntruments(request);
 				}
 			}
 		} catch (Exception e) {

@@ -200,7 +200,7 @@ public class InstrumentService {
 		List<InstrumentContract> instruments = request.getInstruments();
 		VoucherResponse reversalVoucher = voucherService.processReversalVoucher(instruments, request.getRequestInfo());
 		instruments.get(0).getDishonor().setReversalVoucherId(reversalVoucher.getVouchers().get(0).getVoucherNumber());
-//		this.updateInstruments(instruments, request.getRequestInfo());
+		this.updateInstruments(instruments, request.getRequestInfo());
 	}
 
 	private void updateInstruments(List<InstrumentContract> instruments, RequestInfo requestInfo) throws IllegalArgumentException, VoucherCustomException {
