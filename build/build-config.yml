@@ -65,7 +65,7 @@ config:
       - work-dir: "egov-hrms/src/main/resources/db"
         image-name: "egov-hrms-db"
 
-  - name: "business-services/finance-collections-voucher-consumer"
+  - name: "builds/business-services/finance-collections-voucher-consumer"
     build:
       - work-dir: "finance-collections-voucher-consumer"
         image-name: "finance-collections-voucher-consumer"
