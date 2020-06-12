@@ -343,7 +343,7 @@ public class PaymentQueryBuilder {
 
         if (searchCriteria.getReceiptNumbers() != null && !searchCriteria.getReceiptNumbers().isEmpty()) {
             addClauseIfRequired(preparedStatementValues, selectQuery);
-            selectQuery.append(" pyd.receiptNumber IN (:receiptnumber)  ");
+            selectQuery.append(" UPPER(pyd.receiptNumber) IN (:receiptnumber)  ");
             preparedStatementValues.put("receiptnumber", searchCriteria.getReceiptNumbers());
         }
 
