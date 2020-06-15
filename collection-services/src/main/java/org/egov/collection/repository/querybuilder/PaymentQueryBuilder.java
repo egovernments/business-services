@@ -338,7 +338,7 @@ public class PaymentQueryBuilder {
             preparedStatementValues.put("id", searchCriteria.getIds());	
         }
 
-        Set<String> receiptNumbers = new HashSet<>();
+        Set<String> receiptNumbers = new HashSet<String>();
         if(!CollectionUtils.isEmpty(searchCriteria.getReceiptNumbers())){
             searchCriteria.getReceiptNumbers().forEach(receiptNumber -> {
                 receiptNumbers.add(receiptNumber.toUpperCase());
@@ -346,9 +346,9 @@ public class PaymentQueryBuilder {
         }
         
 
-        if (receiptNumbers != null && receiptNumbers.isEmpty()) {
+        if (receiptNumbers != null && !receiptNumbers.isEmpty()) {
             addClauseIfRequired(preparedStatementValues, selectQuery);
-            selectQuery.append(" UPPER(pyd.receiptNumber) IN (:receiptnumber)  ");
+            selectQuery.append(" pyd.receiptNumber IN (:receiptnumber)  ");
             preparedStatementValues.put("receiptnumber", receiptNumbers);
         }
 
