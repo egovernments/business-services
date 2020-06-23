@@ -4,7 +4,7 @@ FROM egovio/apline-jre:8u121
 # INSTRUCTIONS ON HOW TO BUILD JAR:
 # Move to the location where pom.xml is exist in project and build project using below command
 # "mvn clean package"
-COPY /target/finance-collections-voucher-consumer-0.0.1-SNAPSHOT.jar /opt/egov/finance-collections-voucher-consumer.jar
+COPY /target/finance-collections-voucher-consumer-1.1.1-SNAPSHOT.jar /opt/egov/finance-collections-voucher-consumer.jar
 
 COPY start.sh /usr/bin/start.sh
 
