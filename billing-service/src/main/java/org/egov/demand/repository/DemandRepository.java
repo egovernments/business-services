@@ -53,9 +53,7 @@ import org.egov.demand.model.AuditDetails;
 import org.egov.demand.model.Demand;
 import org.egov.demand.model.DemandCriteria;
 import org.egov.demand.model.DemandDetail;
-import org.egov.demand.model.DemandDetailCriteria;
 import org.egov.demand.repository.querybuilder.DemandQueryBuilder;
-import org.egov.demand.repository.rowmapper.DemandDetailRowMapper;
 import org.egov.demand.repository.rowmapper.DemandRowMapper;
 import org.egov.demand.util.Util;
 import org.egov.demand.web.contract.DemandRequest;
@@ -103,13 +101,6 @@ public class DemandRepository {
 		String sql = demandQueryBuilder.getDemandQueryForConsumerCodes(businessConsumercodeMap, presparedStmtList,
 				tenantId);
 		return jdbcTemplate.query(sql, presparedStmtList.toArray(), demandRowMapper);
-	}
-
-	public List<DemandDetail> getDemandDetails(DemandDetailCriteria demandDetailCriteria) {
-
-		List<Object> preparedStatementValues = new ArrayList<>();
-		String searchDemandDetailQuery = DemandQueryBuilder.getDemandDetailQuery(demandDetailCriteria,preparedStatementValues);
-		return jdbcTemplate.query(searchDemandDetailQuery, preparedStatementValues.toArray(),new DemandDetailRowMapper());
 	}
 
 	@Transactional

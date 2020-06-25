@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.demand.config.ApplicationProperties;
 import org.egov.demand.model.AuditDetails;
-import org.egov.demand.model.BillV2.StatusEnum;
+import org.egov.demand.model.BillV2.BillStatus;
 import org.egov.demand.model.Demand;
 import org.egov.demand.model.DemandCriteria;
 import org.egov.demand.model.DemandDetail;
@@ -122,7 +122,7 @@ public class DemandService {
 		generateAndSetIdsForNewDemands(demands, auditDetail);
 		save(demandRequest);
 		
-		billRepoV2.updateBillStatus(demands.stream().map(Demand::getConsumerCode).collect(Collectors.toList()), StatusEnum.EXPIRED);
+		billRepoV2.updateBillStatus(demands.stream().map(Demand::getConsumerCode).collect(Collectors.toList()), BillStatus.EXPIRED);
 		
 		return new DemandResponse(responseInfoFactory.getResponseInfo(requestInfo, HttpStatus.CREATED), demands);
 	}
@@ -208,7 +208,7 @@ public class DemandService {
 
 		update(demandRequest);
 		billRepoV2.updateBillStatus(demands.stream().map(Demand::getConsumerCode).collect(Collectors.toList()),
-				StatusEnum.EXPIRED);
+				BillStatus.EXPIRED);
 		// producer.push(applicationProperties.getDemandIndexTopic(), demandRequest);
 		return new DemandResponse(responseInfoFactory.getResponseInfo(requestInfo, HttpStatus.CREATED), demands);
 	}
