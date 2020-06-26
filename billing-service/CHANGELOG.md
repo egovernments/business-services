@@ -1,7 +1,7 @@
 
 All notable changes to this module will be documented in this file.
 
-## 1.0.0 - 2020-06-25
+## 1.1.0 - 2020-06-25
 
 - Added typescript definition generation plugin
 - Upgraded to `tracer:2.0.0-SNAPSHOT`
@@ -11,6 +11,4 @@ All notable changes to this module will be documented in this file.
 - Deprecated Bill V1 controller
 - removed demand detail search
 
-## 1.0.0
-
-- Base version
+## 1.1.0
