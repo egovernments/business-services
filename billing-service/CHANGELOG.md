@@ -11,4 +11,6 @@ All notable changes to this module will be documented in this file.
 - Deprecated Bill V1 controller
 - removed demand detail search
 
-## 1.1.0
+## 1.0.0
+
+- Base version
