@@ -26,6 +26,8 @@ public class HRMSUtils {
 	public String generatePassword(List<String> params) {
 		StringBuilder password = new StringBuilder();
 		Random random = new Random();
+		String specialCharacters = "@#$%";
+		params.add(specialCharacters);
 		try {
 			for(int i = 0; i < params.size(); i++) {
 				String param = params.get(i);
