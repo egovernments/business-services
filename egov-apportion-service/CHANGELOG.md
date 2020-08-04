@@ -4,7 +4,7 @@
 All notable changes to this module will be documented in this file.
 
 
-## 1.1.0 - 2020-06-17
+## 1.1.1 - 2020-06-17
 - Fixed Bug WOR-415: Regarding adjustedAmount during multiple advance adjustment
 
 ## 1.1.0 - 2020-06-25
