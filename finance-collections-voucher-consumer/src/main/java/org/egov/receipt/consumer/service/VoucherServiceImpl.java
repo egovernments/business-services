@@ -247,7 +247,7 @@ public class VoucherServiceImpl implements VoucherService {
 
 		voucher.setLedgers(new ArrayList<>());
 		final String serviceAttribute = getServiceAttributeByBusinessService(tenantId, requestInfo, businessService, receipt.getConsumerCode());
-		LOGGER.debug("Service Attribute  ::: {}", serviceAttribute);
+		LOGGER.info("Service Attribute  ::: {}", serviceAttribute);
 		amountMapwithGlcode = new LinkedHashMap<>();
 		// Setting glcode and amount in Map as key value pair.
 		for (BillAccountDetail bad : billDetail.getBillAccountDetails()) {
@@ -309,8 +309,10 @@ public class VoucherServiceImpl implements VoucherService {
 				VoucherRequest request = new VoucherRequest();
 				request.setRequestInfo(requestInfo);
 				request.setTenantId(tenantId);
+				LOGGER.info("Business service :: {}, Consumercode :: {}", businessService, consumerCode);
 				Map<?, ?> apiResponse = (Map<?, ?>) serviceRequestRepository.fetchResult(businessServiceUrl, request,
 						tenantId);
+				LOGGER.info("Business service api response :: {}", apiResponse);
 				Map<?, ?> responseSource = apiResponse;
 				Object response = null;
 				for (String str : Arrays.asList(businessService.getServiceAttributeKey().split("\\."))) {
