@@ -306,7 +306,12 @@ public class DemandValidatorV1 {
 
 		if (!dbDemandMap.isEmpty()) {
 			for (Demand demand : demands) {
-				for (Demand demandFromMap : dbDemandMap.get(demand.getConsumerCode())) {
+
+				List<Demand> demandsWithSamekey = dbDemandMap.get(demand.getConsumerCode());
+				if (CollectionUtils.isEmpty(demandsWithSamekey))
+					continue;
+
+				for (Demand demandFromMap : demandsWithSamekey) {
 					if (demand.getTaxPeriodFrom().equals(demandFromMap.getTaxPeriodFrom())
 							&& demand.getTaxPeriodTo().equals(demandFromMap.getTaxPeriodTo()))
 						errors.add(demand.getConsumerCode());
