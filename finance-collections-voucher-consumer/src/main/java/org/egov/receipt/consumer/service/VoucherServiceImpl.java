@@ -305,7 +305,7 @@ public class VoucherServiceImpl implements VoucherService {
 
 				final StringBuilder businessServiceUrl = new StringBuilder(
 						propertiesManager.getBusinessServiceHostUrl()).append(businessService.getServiceAttributeUrl())
-								.append(consumerCode).append("&tenantid=").append(tenantId);
+								.append(consumerCode).append("&tenantId=").append(tenantId);
 				VoucherRequest request = new VoucherRequest();
 				request.setRequestInfo(requestInfo);
 				request.setTenantId(tenantId);
