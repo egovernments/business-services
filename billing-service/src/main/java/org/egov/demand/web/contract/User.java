@@ -1,5 +1,7 @@
 package org.egov.demand.web.contract;
 
+import javax.validation.constraints.Pattern;
+
 import org.egov.demand.model.Owner;
 
 import lombok.AllArgsConstructor;
@@ -20,7 +22,10 @@ public class User {
 	private String salutation;
 	private String name;
 	private String gender;
+	
+	@Pattern(regexp = "(^$|[0-9]{10})") 
 	private String mobileNumber;
+	
 	private String emailId;
 	private String altContactNumber;
 	private String pan;
