@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.egov.common.contract.request.RequestInfo;
 import org.egov.demand.config.ApplicationProperties;
@@ -35,7 +36,7 @@ public class UserService {
      * @param phoneNo
      * @return
      */
-	public Map<String, String> getUser(RequestInfo requestInfo, String phoneNo, String tenantId) {
+	public Map<String, String> getUser(RequestInfo requestInfo, String phoneNo, String name, String tenantId) {
 		
 		Map<String, Object> request = new HashMap<>();
 		UserResponse userResponse = null;
@@ -52,8 +53,11 @@ public class UserService {
 			
 			userResponse = restTemplate.postForObject(url.toString(), request, UserResponse.class);
 			if (null != userResponse) {
-				if (!CollectionUtils.isEmpty(userResponse.getUser()))
+				if (!CollectionUtils.isEmpty(userResponse.getUser()) && userResponse.getUser().stream()
+						.map(User::getName).collect(Collectors.toList()).contains(name)) {
+
 					response.put("id", userResponse.getUser().get(0).getUuid());
+				}
 			}
 		} catch (Exception e) {
 			log.error("Exception while fetching user: ", e);
