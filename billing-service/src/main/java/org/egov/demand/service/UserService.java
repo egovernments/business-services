@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.egov.common.contract.request.RequestInfo;
@@ -82,7 +83,7 @@ public class UserService {
 
 		user.put("name", payer.getName());
 		user.put("mobileNumber", payer.getMobileNumber());
-		user.put("userName", payer.getMobileNumber());
+		user.put("userName", UUID.randomUUID().toString());
 		user.put("active", true);
 		user.put("type", "CITIZEN");
 		user.put("tenantId", demand.getTenantId().split("\\.")[0]);
