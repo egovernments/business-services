@@ -44,6 +44,7 @@ public class UserService {
 		request.put("RequestInfo", requestInfo);
 		request.put("userName", phoneNo);
 		request.put("type", "CITIZEN");
+		request.put("name", name);
 		request.put("tenantId", tenantId.split("\\.")[0]);
 		
 		StringBuilder url = new StringBuilder();
@@ -53,8 +54,7 @@ public class UserService {
 			
 			userResponse = restTemplate.postForObject(url.toString(), request, UserResponse.class);
 			if (null != userResponse) {
-				if (!CollectionUtils.isEmpty(userResponse.getUser()) && userResponse.getUser().stream()
-						.map(User::getName).collect(Collectors.toList()).contains(name)) {
+				if (!CollectionUtils.isEmpty(userResponse.getUser())) {
 
 					response.put("id", userResponse.getUser().get(0).getUuid());
 				}
