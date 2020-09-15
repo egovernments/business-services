@@ -18,28 +18,29 @@ To setup the egov-hrms service in your local system, clone the [Core Service rep
 To run the egov-hrms services in local system, you need to port forward below services.
 
 ```bash
- kubectl port-forward -n egov {egov-idgen} 8087:8080
- kubectl port-forward -n egov {egov-mdms} 8088:8080
- kubectl port-forward -n egov {egov-user} 8089:8080
- kubectl port-forward -n egov {egov-filestore} 8090:8080
- kubectl port-forward -n egov {egov-localization} 8091:8080
+function kgpt(){kubectl get pods -n egov --selector=app=$1 --no-headers=true | head -n1 | awk '{print $1}'}
+kubectl port-forward -n egov $(kgpt egov-idgen) 8087:8080 &
+kubectl port-forward -n egov $(kgpt egov-mdms-service) 8088:8080 &
+kubectl port-forward -n egov $(kgpt egov-user) 8089:8080 &
+kubectl port-forward -n egov $(kgpt egov-filestore) 8090:8080 &
+kubectl port-forward -n egov $(kgpt egov-localization) 8091:8080 &
 ``` 
 
 Update below listed properties in `application.properties` before running the project:
 
 ```ini
- 
--spring.datasource.url=jdbc:postgresql://localhost:5432/{local postgres db name}
+# {Id Gen service hostname}
+egov.idgen.host = http://127.0.0.1:8087
 
--spring.flyway.url=jdbc:postgresql://localhost:5432/{local postgres db name}
+# {mdms hostname}
+egov.mdms.host=http://127.0.0.1:8088
 
--egov.mdms.host={mdms hostname}
+# {user service hostname}
+egov.user.host = http://127.0.0.1:8089
 
--egov.user.host = {user service hostname}
+# {Filestore service hostname}
+egov.filestore.host = http://127.0.0.1:8090
 
--egov.idgen.host = {Id Gen service hostname}
-
--egov.filestore.host = {Filestore service hostname}
-
--egov.localization.host = {Localization service hostname}
+# {Localization service hostname}
+egov.localization.host = http://127.0.0.1:8091
 ```
