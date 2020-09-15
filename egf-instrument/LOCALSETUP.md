@@ -19,11 +19,12 @@ To setup the egf-instrument service in your local system, clone the [Business se
 To run the egf-instrument service locally, you need to port forward below services.
 
 ```bash
- kubectl port-forward -n egov {egf-master pod id} 8091:8080
+function kgpt(){kubectl get pods -n egov --selector=app=$1 --no-headers=true | head -n1 | awk '{print $1}'}
+kubectl port-forward -n egov $(kgpt egf-master) 8081:8080
 ``` 
 
-Update below listed properties in **`application.properties`** before running the project:
+Update below listed properties in `application.properties` before running the project:
 
 ```ini
--egov.services.egfmaster.hostname = {egf-master service hostname}
+egov.services.egfmaster.hostname = http://127.0.0.1:8081
 ```
