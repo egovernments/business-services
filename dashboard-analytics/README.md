@@ -3,12 +3,11 @@
 # dashboard-analytics
 
 
-DSS Analytics Module is used to return aggregated data from elastic search indexes which is displayed on UI to gain meaningful insights in the data
+DSS Analytics Module is used to return aggregated data from elastic search indexes which is displayed on UI to gain meaningful insights from the data
 
 ### DSS Analytics 
 The analytics service creates/wraps queries based on the configuration provided and executes it on the elastic search to fetch the aggregated data.
-This aggregated data is then transformed to AggregateDTO by Response Handlers. AggregateDTO contains list of object called Plots. This plot object are created based on the
-chart type defined in the configuration. The module also provides functionality to compare the data with previous time period,which can be configured 
+This aggregated data is then transformed to AggregateDTO by Response Handlers. AggregateDTO contains list of object called Plots. This plot object are created based on the chart type defined in the configuration. The module also provides functionality to compare the data with previous time period,which can be configured 
 by defining insight in the chartAPI configuration for the required chart.
 
 
