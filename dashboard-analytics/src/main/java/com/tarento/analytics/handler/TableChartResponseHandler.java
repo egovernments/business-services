@@ -103,7 +103,7 @@ public class TableChartResponseHandler implements IResponseHandler {
 
             // FIX ME: For all aggragation oath with string the above condition will fail and no data will be retunred
 
-            if(filterPlot.size()>0){
+            if(filterPlot.size()>=0){
                 Data data = new Data(plotMap.getKey(), Integer.parseInt(String.valueOf(plotMap.getValue().get(SERIAL_NUMBER).getLabel())), null);
                 data.setPlots(plotList);
 
