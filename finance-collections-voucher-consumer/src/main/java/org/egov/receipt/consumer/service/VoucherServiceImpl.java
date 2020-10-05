@@ -51,6 +51,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -92,7 +93,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class VoucherServiceImpl implements VoucherService {
-
+	
 	@Autowired
 	private PropertiesManager propertiesManager;
 	@Autowired
@@ -206,7 +207,15 @@ public class VoucherServiceImpl implements VoucherService {
 	private void setVoucherDetails(Voucher voucher, Receipt receipt, String tenantId, RequestInfo requestInfo,
 			FinanceMdmsModel finSerMdms, String collectiobVersion) throws Exception {
 		BillDetail billDetail = receipt.getBill().get(0).getBillDetails().get(0);
-		String receiptNumber = collectiobVersion != null && collectiobVersion.equalsIgnoreCase("V2") ? receipt.getPaymentId() : billDetail.getReceiptNumber();
+		String receiptNumber = null;
+		String consumerCode = null;
+		if (collectiobVersion != null && collectiobVersion.equalsIgnoreCase("V2")) {
+			receiptNumber = receipt.getPaymentId();
+			consumerCode = receipt.getConsumerCode();
+		} else  {
+			receiptNumber = billDetail.getReceiptNumber();
+			consumerCode= billDetail.getConsumerCode();
+		}
 		String bsCode = billDetail.getBusinessService();
 		List<BusinessService> serviceByCode = this.getBusinessServiceByCode(tenantId, bsCode, requestInfo, finSerMdms);
 		List<TaxHeadMaster> taxHeadMasterByBusinessServiceCode = this.getTaxHeadMasterByBusinessServiceCode(tenantId,
@@ -246,7 +255,7 @@ public class VoucherServiceImpl implements VoucherService {
 				propertiesManager.getReceiptViewSourceUrl() + "?selectedReceipts=" + receiptNumber);
 
 		voucher.setLedgers(new ArrayList<>());
-		final String serviceAttribute = getServiceAttributeByBusinessService(tenantId, requestInfo, businessService, receipt.getConsumerCode());
+		final String serviceAttribute = getServiceAttributeByBusinessService(tenantId, requestInfo, businessService, consumerCode);
 		LOGGER.info("Service Attribute  ::: {}", serviceAttribute);
 		amountMapwithGlcode = new LinkedHashMap<>();
 		// Setting glcode and amount in Map as key value pair.
@@ -302,10 +311,16 @@ public class VoucherServiceImpl implements VoucherService {
 			BusinessService businessService, String consumerCode) throws VoucherCustomException {
 		if (businessService.isServiceAttributeMappingEnabled()) {
 			try {
+				final List<?> list = Arrays.asList(consumerCode.split(":"));
+				String formattedUrl = null;
+				if (list.size() > 1)
+					formattedUrl = String.format(businessService.getServiceAttributeUrl(), tenantId, list.get(0),
+							list.get(1));
+				else
+					formattedUrl = String.format(businessService.getServiceAttributeUrl(), tenantId, list.get(0));
 
 				final StringBuilder businessServiceUrl = new StringBuilder(
-						propertiesManager.getBusinessServiceHostUrl()).append(businessService.getServiceAttributeUrl())
-								.append(consumerCode).append("&tenantId=").append(tenantId);
+						propertiesManager.getBusinessServiceHostUrl()).append(formattedUrl);
 				VoucherRequest request = new VoucherRequest();
 				request.setRequestInfo(requestInfo);
 				request.setTenantId(tenantId);
@@ -316,7 +331,10 @@ public class VoucherServiceImpl implements VoucherService {
 				Map<?, ?> responseSource = apiResponse;
 				Object response = null;
 				for (String str : Arrays.asList(businessService.getServiceAttributeKey().split("\\."))) {
-					response = responseSource.get(str);
+					if (str.contains("~"))
+						response = getResponse(responseSource, str);
+					else
+						response = responseSource.get(str);
 					if (response instanceof Collection) {
 						response = ((ArrayList<?>) response).get(0);
 						responseSource = (Map<?, ?>) response;
@@ -324,10 +342,22 @@ public class VoucherServiceImpl implements VoucherService {
 				}
 				return (String) response;
 			} catch (Exception e) {
-				throw new VoucherCustomException(ProcessStatus.FAILED, "Failed to featch service attribute");
+				throw new VoucherCustomException(ProcessStatus.FAILED, "Failed to fetch service attribute");
 			}
 		}
 		return null;
+	}
+
+	private Object getResponse(Map<?, ?> responseSource, String str) {
+		Object response;
+		StringBuilder res = new StringBuilder();
+		for (String key : Arrays.asList(str.split("~"))) {
+			if (responseSource.get(key) != null) {
+				res.append(responseSource.get(key)).append(".");
+			}
+		}
+		response = res.deleteCharAt(res.length() - 1);
+		return response;
 	}
 
 	/**
@@ -445,7 +475,8 @@ public class VoucherServiceImpl implements VoucherService {
 		Receipt receipt = req.getReceipt().get(0);
 		String tenantId = receipt.getTenantId();
 		Bill bill = receipt.getBill().get(0);
-		String bsCode = req.getReceipt().stream().map(Receipt::getBill).flatMap(List::stream).map(Bill::getBusinessService).collect(Collectors.joining(","));
+		String bsCode = req.getReceipt().stream().map(Receipt::getBill).flatMap(List::stream)
+				.map(Bill::getBusinessService).filter(Objects::nonNull).collect(Collectors.joining(","));
 		bsCode = bsCode != null && !bsCode.isEmpty() ? bsCode : bill.getBillDetails().get(0).getBusinessService();
 		List<Tenant> tenantList = microServiceUtil.getFinanceTenantList(tenantId, bsCode, req.getRequestInfo(), finSerMdms);
 		List<Tenant> collect = tenantList.stream().filter(tenant -> tenant.getCode().equals(tenantId)).collect(Collectors.toList());
