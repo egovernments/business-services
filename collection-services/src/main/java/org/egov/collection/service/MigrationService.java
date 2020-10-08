@@ -307,14 +307,15 @@ public class MigrationService {
 			payment.setInstrumentStatus(InstrumentStatusEnum.CANCELLED);
 		} else {
 
-			payment.setInstrumentStatus(InstrumentStatusEnum.APPROVED);
 			if ((payment.getPaymentMode().toString()).equalsIgnoreCase(ONLINE.name())
 					|| payment.getPaymentMode().toString().equalsIgnoreCase(CARD.name())
 					|| (receiptHeaderStatus.equalsIgnoreCase(ReceiptStatus.REMITTED.toString()))) {
 
 				payment.setPaymentStatus(PaymentStatusEnum.DEPOSITED);
+				payment.setInstrumentStatus(InstrumentStatusEnum.REMITTED);
 			} else {
 				payment.setPaymentStatus(PaymentStatusEnum.NEW);
+				payment.setInstrumentStatus(InstrumentStatusEnum.APPROVED);
 			}
 		}
 
