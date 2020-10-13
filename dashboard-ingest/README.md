@@ -117,7 +117,15 @@ es.push.direct=false
     - This API is to resume a paused kafka consumer.
 
 ### Kafka Consumers
-- To Do
+Following are the kafka consumer topic
+- `ingestData`:- The consumer listen on this kafka topic to get the required data for ingest pipleine.
+- `dss-collection-update`:- The consumer listen on this topic to get the collection index data.
+- `validData` :- The consumer listen on this topic to valida the data before transformation.
+- `transformedData`:- The consumer listen on this topic consumes the collection/incoming data and transforms the data using jolt configurations.
+- `egov-dss-ingest-enriched`:- The consumer listen on this kafka topic in order to hook the collection data to its business module data.
 
 ### Kafka Producers
-- To Do
+Following are the kafka producer topic
+- `validData`:- The producer send the data to this topic to valid the data before transformation.
+- `transformedData` :- The producer send the data to this topic in order to transorm collection/incoming data using jolt configurations.
+- `egov-dss-ingest-enriched`:- The producer send the data to this topic after transormation in order to hook the collection data to its business module data.
