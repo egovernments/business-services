@@ -148,7 +148,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Document'
-        description: 
+        description: documents based on requirment related to amendment type/Reason. 
       effectiveFrom:
         type: number
         format: int64
@@ -168,6 +168,7 @@ definitions:
       - businessService
       - tenantId
       - amendmentreason
+      - documents
   AmendmentUpdate:
     type: object
     description: 'The update object which carries the workflow action info along with the amendment id'
@@ -185,6 +186,11 @@ definitions:
       additionalDetails:
         type: object
         description: field for capturing any additional details.
+      documents:
+        type: array
+        items:
+          $ref: '#/definitions/Document'
+        description: documents based on requirment related to amendment type/Reason. 
     required:
       - amendmentId
       - tenantId
