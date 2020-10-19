@@ -129,6 +129,9 @@ definitions:
           - ONE_TIME_SETTLEMENT
           - REMISSION_FOR_PROPERTY_TAX
           - OTHERS
+      reasonDocumentNumber:
+        type: string
+        description: unique is provided in the physical document or govt order related to the amendment reason. Can be order number in case of court order, govt notice number in case of tax write off and document number for other scenarios.
       status:
         type: string
         enum:
