@@ -191,7 +191,7 @@ public class MigrationService {
         
         PaymentResponse paymentResponse = new PaymentResponse(new ResponseInfo(), paymentList);
         
-        String key = String.valueOf(count%3);
+        String key = paymentResponse.getPayments().get(0).getPaymentDetails().get(0).getReceiptNumber();
         producer.producer(properties.getCollectionMigrationTopicName(), key, paymentResponse);
     }
 
