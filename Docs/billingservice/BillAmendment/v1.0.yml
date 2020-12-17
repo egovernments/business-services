@@ -11,12 +11,13 @@ info:
     name: eGovernments Foundation
 schemes:
   - https
-basePath: /billingservice/amendment/
+basePath: /billingservice/
 x-common-path: 'https://raw.githubusercontent.com/egovernments/egov-services/master/docs/common/contracts/v1-0-0.yml'
 paths:
-  /_search:
+  /amendment/_search:
     post:
-      description: 'Returns an amendment along with its list of demand details which are being amended into the existing entity. Along with tenantId, any one parameter is mandatory. In case search is performed based on the demand amounts, then demandFrom and demandTo parameters will be mandatory.
+      description: 'Returns an amendment along with its list of demand details which are being amended into the existing entity. Along with tenantId, any one parameter is mandatory. In case search is performed based on the demand amounts, then demandFrom and demandTo parameters will be mandatory.'
+      
       parameters:
         - $ref: 'https://raw.githubusercontent.com/egovernments/egov-services/master/docs/common/contracts/v1-0-0.yml#/parameters/requestInfo'
         - $ref: 'https://raw.githubusercontent.com/egovernments/egov-services/master/docs/common/contracts/v1-0-0.yml#/parameters/tenantId'
@@ -38,15 +39,15 @@ paths:
       tags:
         - Amendment
       responses:
-      '200':
+        '200':
           description: returns a amendment along with its demand details.
           schema:
             $ref: '#/definitions/AmendmentResponse'
-      '400':
+        '400':
           description: Invalid input
           schema:
             $ref: 'https://raw.githubusercontent.com/egovernments/egov-services/master/docs/common/contracts/v1-0-0.yml#/definitions/ErrorRes'
-  /_create:
+  /amendment/_create:
     post:
       description: Creates a Amendment.
       parameters:
@@ -67,9 +68,10 @@ paths:
           description: Invalid input
           schema:
             $ref: 'https://raw.githubusercontent.com/egovernments/egov-services/master/docs/common/contracts/v1-0-0.yml#/definitions/ErrorRes'
-  /_update:
+            
+  /amendment/_update:
     post:
-      description: Updates the workflow status of Amendment.
+      description: 'Updates the workflow status of Amendment.''
       parameters:
         - name: AmendmentUpdate
           in: body
@@ -83,7 +85,7 @@ paths:
         '200':
           description: updated the workflow/status for amendment.
           schema:
-            $ref: '#/definitions/DemandResponse'
+            $ref: '#/definitions/AmendmentResponse'
         '400':
           description: Invalid input
           schema:
@@ -99,7 +101,8 @@ definitions:
         description: uuid.
       demandIds:
         type: array
-        items: string
+        items:
+          type: string      
         description: uuid of the demands to which the order is being amended.
       amendedDemandId:
         type: string
@@ -138,12 +141,12 @@ definitions:
           - ACTIVE
           - CANCELLED
           - INWORKFLOW
+      workflow:
+        $ref: 'https://raw.githubusercontent.com/egovernments/core-services/master/docs/worfklow-2.0.yml#/definitions/ProcessInstance'
       demandDetails:
         type: array
         items:
           $ref: '#/definitions/DemandDetail'
-      workflow:
-        $ref: 'https://raw.githubusercontent.com/egovernments/core-services/master/docs/worfklow-2.0#/definitons/ProcessInstance'
       documents:
         type: array
         items:
@@ -231,6 +234,28 @@ definitions:
       - taxHead
       - taxAmount
       - collectionAmount
+  Document:
+      title: Document
+      type: object
+      properties:
+        id:
+          maxLength: 64
+          type: string
+          description: system id of the Document.
+        documentType:
+          type: string
+          description: unique document type code, should be validated with document type master
+        fileStore:
+          type: string
+          description: File store reference key.
+        documentUid:
+          maxLength: 64
+          type: string
+          description: The unique id(Pancard Number,Adhar etc.) of the given Document.
+        additionalDetails:
+          type: object
+          description: Json object to capture any extra information which is not accommodated by model
+      description: This object holds list of documents attached during the transaciton for a property
   AmendmentRequest:
     properties:
       RequestInfo:
