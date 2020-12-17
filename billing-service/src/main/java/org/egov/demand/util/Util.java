@@ -163,7 +163,6 @@ public class Util {
 	
 	public String getValueFromAdditionalDetailsForKey (Object additionalDetails, String key) {
 		
-		/* Previous record set to ACTIVE */
 		@SuppressWarnings("unchecked")
 		Map<String, Object> additionalDetailMap = mapper.convertValue(additionalDetails, Map.class);
 		if(null == additionalDetails) 
