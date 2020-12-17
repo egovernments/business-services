@@ -140,7 +140,7 @@ public class BillingServiceConsumer {
 
 	private void updateDemandsFromPayment(Map<String, Object> consumerRecord, Boolean isReceiptCancellation) {
 		
-		BillRequestV2 billReq = null;
+		BillRequestV2 billReq = BillRequestV2.builder().build();
 		
 		try {
 
@@ -182,7 +182,8 @@ public class BillingServiceConsumer {
 		List<BillV2> bills = Arrays.asList(objectMapper.convertValue(context.read("$.Payment.paymentDetails.*.bill"), BillV2[].class));
 		
 		RequestInfo requestInfo = objectMapper.convertValue(context.read("$.RequestInfo"), RequestInfo.class);
-		billReq = BillRequestV2.builder().bills(bills).requestInfo(requestInfo).build();
+		billReq.setBills(bills);
+		billReq.setRequestInfo(requestInfo);
 		
 		/* payment value is set in zeroth index of bills
 		 * 
