@@ -157,7 +157,6 @@ public class BillingServiceConsumer {
 			
 		} catch (Exception e ) {
 
-			@SuppressWarnings("null")
 			String paymentId = util.getValueFromAdditionalDetailsForKey(
 					billReq.getBills().get(0).getAdditionalDetails(), Constants.PAYMENT_ID_KEY);
 			updatePaymentBackUpdateForFailure(e.getMessage(), paymentId, isReceiptCancellation);
