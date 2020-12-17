@@ -222,10 +222,10 @@ public class BillingServiceConsumer {
 				.isBackUpdateSucces(true)
 				.build();
 
-		PaymentBackUpdateAudit paymentBackUpdateAudit = demandRepository
+		String paymentIdFromDb = demandRepository
 				.searchPaymentBackUpdateAudit(backUpdateAuditCriteria);
 		
-		if (null != paymentBackUpdateAudit && paymentBackUpdateAudit.getPaymentId().equalsIgnoreCase(paymentId))
+		if (null != paymentIdFromDb && paymentIdFromDb.equalsIgnoreCase(paymentId))
 			throw new CustomException("EGBS_PAYMENT_BACKUPDATE_ERROR",
 					"Duplicate Payment object received for back update with payment-id : " + paymentId
 							+ ", payment already updated to demands");
