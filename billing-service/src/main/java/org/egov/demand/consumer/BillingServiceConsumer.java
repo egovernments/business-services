@@ -144,10 +144,10 @@ public class BillingServiceConsumer {
 		
 		try {
 
-			billReq = getBillsFromPayment(consumerRecord, isReceiptCancellation);
+			setBillRequestFromPayment(consumerRecord, billReq, isReceiptCancellation);
 			receiptServiceV2.updateDemandFromReceipt(billReq, isReceiptCancellation);
 			
-		} catch (JsonProcessingException e) {
+		} catch (JsonProcessingException | IllegalArgumentException e) {
 
 			/*
 			 * Adding random uuid in primary when jsonmapping exception occurs
@@ -157,6 +157,7 @@ public class BillingServiceConsumer {
 			
 		} catch (Exception e ) {
 
+			@SuppressWarnings("null")
 			String paymentId = util.getValueFromAdditionalDetailsForKey(
 					billReq.getBills().get(0).getAdditionalDetails(), Constants.PAYMENT_ID_KEY);
 			updatePaymentBackUpdateForFailure(e.getMessage(), paymentId, isReceiptCancellation);
@@ -170,7 +171,7 @@ public class BillingServiceConsumer {
 	 * @param consumerRecord
 	 * @throws JsonProcessingException 
 	 */
-	private BillRequestV2 getBillsFromPayment(Map<String, Object> consumerRecord, boolean isReceiptCancelled) throws JsonProcessingException {
+	private void setBillRequestFromPayment(Map<String, Object> consumerRecord, BillRequestV2 billReq, boolean isReceiptCancelled) throws JsonProcessingException {
 		
 		DocumentContext context = null;
 		
@@ -179,6 +180,9 @@ public class BillingServiceConsumer {
 		String paymentId = objectMapper.convertValue(context.read("$.Payment.id"), String.class);
 		List<BigDecimal> amtPaidList = Arrays.asList(objectMapper.convertValue(context.read("$.Payment.paymentDetails.*.totalAmountPaid"), BigDecimal[].class));
 		List<BillV2> bills = Arrays.asList(objectMapper.convertValue(context.read("$.Payment.paymentDetails.*.bill"), BillV2[].class));
+		
+		RequestInfo requestInfo = objectMapper.convertValue(context.read("$.RequestInfo"), RequestInfo.class);
+		billReq = BillRequestV2.builder().bills(bills).requestInfo(requestInfo).build();
 		
 		/* payment value is set in zeroth index of bills
 		 * 
@@ -201,11 +205,8 @@ public class BillingServiceConsumer {
 
 			} else {
 				bill.setStatus(org.egov.demand.model.BillV2.BillStatus.PAID);
+			}
 		}
-	}
-
-		RequestInfo requestInfo = objectMapper.convertValue(context.read("$.RequestInfo"), RequestInfo.class);
-		return BillRequestV2.builder().bills(bills).requestInfo(requestInfo).build();
 	}
 
 	/**
