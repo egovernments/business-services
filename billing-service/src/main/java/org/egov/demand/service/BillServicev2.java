@@ -341,7 +341,7 @@ public class BillServicev2 {
 			BigDecimal totalCollection = demand.getDemandDetails().stream().map(DemandDetail::getCollectionAmount)
 					.reduce(BigDecimal.ZERO, BigDecimal::add);
 			if (totoalTax.compareTo(totalCollection) > 0 || totoalTax.compareTo(totalCollection) == 0
-					&& demand.getAuditDetails().getCreatedTime() == demand.getAuditDetails().getLastModifiedTime())
+					&& demand.getAuditDetails().getCreatedTime().equals(demand.getAuditDetails().getLastModifiedTime()))
 				return true;
 			else
 				return false;
