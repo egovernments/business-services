@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: '1.0.0'
+  version: 1.0.0
   title: eGov Billing Service Amemdment APIs
   description: |-
     The Bill amendement service manages head wise demand detail addition to the existing demands based on an external stimuli such as Court case settlement/One time waiver and so on.It manages
@@ -17,7 +17,6 @@ paths:
   /amendment/_search:
     post:
       description: 'Returns an amendment along with its list of demand details which are being amended into the existing entity. Along with tenantId, any one parameter is mandatory. In case search is performed based on the demand amounts, then demandFrom and demandTo parameters will be mandatory.'
-      
       parameters:
         - $ref: 'https://raw.githubusercontent.com/egovernments/egov-services/master/docs/common/contracts/v1-0-0.yml#/parameters/requestInfo'
         - $ref: 'https://raw.githubusercontent.com/egovernments/egov-services/master/docs/common/contracts/v1-0-0.yml#/parameters/tenantId'
@@ -33,7 +32,7 @@ paths:
           type: string
         - name: businessService
           in: query
-          description: Billing system details e.g., PropertyTax,Water Charges etc.
+          description: 'Billing system details e.g., PropertyTax,Water Charges etc.'
           required: true
           type: string
       tags:
@@ -68,19 +67,11 @@ paths:
           description: Invalid input
           schema:
             $ref: 'https://raw.githubusercontent.com/egovernments/egov-services/master/docs/common/contracts/v1-0-0.yml#/definitions/ErrorRes'
-            
   /amendment/_update:
     post:
-      description: 'Updates the workflow status of Amendment.''
-      parameters:
-        - name: AmendmentUpdate
-          in: body
-          description: Request header for the Amendment.
-          required: true
-          schema:
-            $ref: '#/definitions/AmendmentUpdateRequest'
+      description: 'Updates the workflow status of Amendment.'' parameters: - name: AmendmentUpdate in: body description: Request header for the Amendment. required: true schema: $ref: '
       tags:
-        - Demand
+        - Amendment
       responses:
         '200':
           description: updated the workflow/status for amendment.
@@ -90,7 +81,6 @@ paths:
           description: Invalid input
           schema:
             $ref: 'https://raw.githubusercontent.com/egovernments/egov-services/master/docs/common/contracts/v1-0-0.yml#/definitions/ErrorRes'
-
 definitions:
   Amendment:
     type: object
@@ -102,7 +92,7 @@ definitions:
       demandIds:
         type: array
         items:
-          type: string      
+          type: string
         description: uuid of the demands to which the order is being amended.
       amendedDemandId:
         type: string
@@ -134,7 +124,7 @@ definitions:
           - OTHERS
       reasonDocumentNumber:
         type: string
-        description: unique is provided in the physical document or govt order related to the amendment reason. Can be order number in case of court order, govt notice number in case of tax write off and document number for other scenarios.
+        description: 'unique is provided in the physical document or govt order related to the amendment reason. Can be order number in case of court order, govt notice number in case of tax write off and document number for other scenarios.'
       status:
         type: string
         enum:
@@ -151,7 +141,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Document'
-        description: documents based on requirment related to amendment type/Reason. 
+        description: documents based on requirment related to amendment type/Reason.
       effectiveFrom:
         type: number
         format: int64
@@ -174,7 +164,7 @@ definitions:
       - documents
   AmendmentUpdate:
     type: object
-    description: 'The update object which carries the workflow action info along with the amendment id'
+    description: The update object which carries the workflow action info along with the amendment id
     properties:
       id:
         type: string
@@ -193,7 +183,7 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Document'
-        description: documents based on requirment related to amendment type/Reason. 
+        description: documents based on requirment related to amendment type/Reason.
     required:
       - amendmentId
       - tenantId
@@ -235,40 +225,40 @@ definitions:
       - taxAmount
       - collectionAmount
   Document:
-      title: Document
-      type: object
-      properties:
-        id:
-          maxLength: 64
-          type: string
-          description: system id of the Document.
-        documentType:
-          type: string
-          description: unique document type code, should be validated with document type master
-        fileStore:
-          type: string
-          description: File store reference key.
-        documentUid:
-          maxLength: 64
-          type: string
-          description: The unique id(Pancard Number,Adhar etc.) of the given Document.
-        additionalDetails:
-          type: object
-          description: Json object to capture any extra information which is not accommodated by model
-      description: This object holds list of documents attached during the transaciton for a property
+    title: Document
+    type: object
+    properties:
+      id:
+        maxLength: 64
+        type: string
+        description: system id of the Document.
+      documentType:
+        type: string
+        description: 'unique document type code, should be validated with document type master'
+      fileStore:
+        type: string
+        description: File store reference key.
+      documentUid:
+        maxLength: 64
+        type: string
+        description: 'The unique id(Pancard Number,Adhar etc.) of the given Document.'
+      additionalDetails:
+        type: object
+        description: Json object to capture any extra information which is not accommodated by model
+    description: This object holds list of documents attached during the transaciton for a property
   AmendmentRequest:
     properties:
       RequestInfo:
         $ref: 'https://raw.githubusercontent.com/egovernments/egov-services/master/docs/common/contracts/v1-0-0.yml#/definitions/RequestInfo'
       Amendment:
-          $ref: '#/definitions/Amendment'
+        $ref: '#/definitions/Amendment'
     type: object
   AmendmentUpdateRequest:
     properties:
       RequestInfo:
         $ref: 'https://raw.githubusercontent.com/egovernments/egov-services/master/docs/common/contracts/v1-0-0.yml#/definitions/RequestInfo'
       AmendmentUpdate:
-          $ref: '#/definitions/AmendmentUpdate'
+        $ref: '#/definitions/AmendmentUpdate'
     type: object
   AmendmentResponse:
     properties:
@@ -280,4 +270,3 @@ definitions:
         items:
           $ref: '#/definitions/Amendment'
     type: object
-  
