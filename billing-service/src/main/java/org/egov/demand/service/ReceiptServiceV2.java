@@ -1,10 +1,5 @@
 package org.egov.demand.service;
 
-import static org.egov.demand.util.Constants.ADVANCE_TAXHEAD_JSONPATH_CODE;
-import static org.egov.demand.util.Constants.MDMS_CODE_FILTER;
-import static org.egov.demand.util.Constants.MODULE_NAME;
-import static org.egov.demand.util.Constants.TAXHEAD_MASTERNAME;
-
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,27 +18,16 @@ import org.egov.demand.model.BillV2;
 import org.egov.demand.model.Demand;
 import org.egov.demand.model.DemandCriteria;
 import org.egov.demand.model.DemandDetail;
-<<<<<<< HEAD
-import org.egov.demand.repository.BillRepositoryV2;
-import org.egov.demand.web.contract.BillRequestV2;
-import org.egov.demand.web.contract.DemandRequest;
-=======
 import org.egov.demand.model.PaymentBackUpdateAudit;
+import org.egov.demand.repository.BillRepositoryV2;
 import org.egov.demand.util.Constants;
 import org.egov.demand.util.Util;
 import org.egov.demand.web.contract.BillRequestV2;
 import org.egov.demand.web.contract.DemandRequest;
-import org.egov.demand.web.validator.DemandValidatorV1;
-import org.egov.mdms.model.MdmsCriteriaReq;
->>>>>>> 705ea10... RAIN-1958 demandbackupdate apportioning-fix,update-log & duplicate-validation added
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.jayway.jsonpath.DocumentContext;
-
-<<<<<<< HEAD
-=======
 import lombok.extern.slf4j.Slf4j;
 
 @Service

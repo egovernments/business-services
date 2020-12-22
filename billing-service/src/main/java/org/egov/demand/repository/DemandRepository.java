@@ -53,11 +53,8 @@ import org.egov.demand.model.AuditDetails;
 import org.egov.demand.model.Demand;
 import org.egov.demand.model.DemandCriteria;
 import org.egov.demand.model.DemandDetail;
-<<<<<<< HEAD
 import org.egov.demand.model.DemandDetailCriteria;
-=======
 import org.egov.demand.model.PaymentBackUpdateAudit;
->>>>>>> 705ea10... RAIN-1958 demandbackupdate apportioning-fix,update-log & duplicate-validation added
 import org.egov.demand.repository.querybuilder.DemandQueryBuilder;
 import org.egov.demand.repository.rowmapper.DemandDetailRowMapper;
 import org.egov.demand.repository.rowmapper.DemandRowMapper;
