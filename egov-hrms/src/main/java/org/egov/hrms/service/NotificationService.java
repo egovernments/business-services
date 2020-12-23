@@ -53,6 +53,11 @@ public class NotificationService {
 	@Value("${egov.otp.create.endpoint}")
 	private String otpCreateEndpoint;
 
+	@Value("${egov-environment-domain}")
+	private String envHost;
+
+
+
 	/**
 	 * Sends notification by putting the sms content onto the core-sms topic
 	 * 
@@ -82,7 +87,7 @@ public class NotificationService {
 		for(Employee employee: request.getEmployees()) {
 			if(employee.getReactivationDetails()!=null && employee.getReActivateEmployee()){
 				String OTP = getOTP(employee,requestInfo);
-				String link = otpHost + "employee/user/otp";
+				String link = envHost + "employee/user/otp";
 
 				message = message.replace("<Employee Name>",employee.getUser().getName()).replace("<Username>",employee.getCode());
 				message = message.replace("<date>",(employee.getReactivationDetails().get(0).getEffectiveFrom()).toString());
