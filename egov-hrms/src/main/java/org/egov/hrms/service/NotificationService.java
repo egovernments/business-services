@@ -53,7 +53,7 @@ public class NotificationService {
 	@Value("${egov.otp.create.endpoint}")
 	private String otpCreateEndpoint;
 
-	@Value("${egov-environment-domain}")
+	@Value("${egov.environment.domain}")
 	private String envHost;
 
 
