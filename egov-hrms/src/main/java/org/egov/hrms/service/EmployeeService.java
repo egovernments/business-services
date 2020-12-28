@@ -336,8 +336,8 @@ public class EmployeeService {
 			enrichUpdateRequest(employee, requestInfo, existingEmployees);
 			updateUser(employee, requestInfo);
 		});
-		hrmsProducer.push(propertiesManager.getUpdateEmployeeTopic(), employeeRequest);
-		notificationService.sendReactivationNotification(employeeRequest);
+		hrmsProducer.push(propertiesManager.getUpdateTopic(), employeeRequest);
+		//notificationService.sendReactivationNotification(employeeRequest);
 		return generateResponse(employeeRequest);
 	}
 	

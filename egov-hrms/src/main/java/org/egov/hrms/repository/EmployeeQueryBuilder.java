@@ -69,7 +69,8 @@ public class EmployeeQueryBuilder {
 			addToPreparedStatement(preparedStmtList, criteria.getEmployeetypes());
 		}
 		if(criteria.getIsActive() != null){
-			builder.append(" and employee.active = "+criteria.getIsActive());
+			builder.append(" and employee.active = ?");
+			preparedStmtList.add(criteria.getIsActive());
 		}
 	}
 	

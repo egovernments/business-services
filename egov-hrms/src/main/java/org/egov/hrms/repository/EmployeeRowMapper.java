@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.egov.hrms.model.*;
 import org.egov.hrms.model.enums.EmployeeDocumentReferenceType;
 import org.egov.hrms.web.contract.User;
+import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -99,6 +100,7 @@ public class EmployeeRowMapper implements ResultSetExtractor<List<Employee>> {
 			currentEmployee.setAssignments(assignments);
 		}catch(Exception e) {
 			log.error("Error in row mapper while mapping Assignments: ",e);
+			throw new CustomException("ROWMAPPER_ERROR","Error in row mapper while mapping Assignments");
 		}
 	}
 	
@@ -133,6 +135,7 @@ public class EmployeeRowMapper implements ResultSetExtractor<List<Employee>> {
 			currentEmployee.setJurisdictions(jurisdictions);
 		}catch(Exception e) {
 			log.error("Error in row mapper while mapping Jurisdictions: ",e);
+			throw new CustomException("ROWMAPPER_ERROR","Error in row mapper while mapping Jurisdictions");
 		}
 	}
 	
@@ -165,6 +168,7 @@ public class EmployeeRowMapper implements ResultSetExtractor<List<Employee>> {
 			currentEmployee.setEducation(educationDetails);
 		}catch(Exception e) {
 			log.error("Error in row mapper while mapping Educational Details: ",e);
+			throw new CustomException("ROWMAPPER_ERROR","Error in row mapper while mapping Educational Details");
 		}
 	}
 	
@@ -198,6 +202,7 @@ public class EmployeeRowMapper implements ResultSetExtractor<List<Employee>> {
 			currentEmployee.setTests(tests);
 		}catch(Exception e) {
 			log.error("Error in row mapper while mapping Departmental Tests: ",e);
+			throw new CustomException("ROWMAPPER_ERROR","Error in row mapper while mapping Departmental Tests");
 		}
 	}
 	
@@ -229,6 +234,7 @@ public class EmployeeRowMapper implements ResultSetExtractor<List<Employee>> {
 			currentEmployee.setServiceHistory(history);
 		}catch(Exception e) {
 			log.error("Error in row mapper while mapping Service History: ",e);
+			throw new CustomException("ROWMAPPER_ERROR","Error in row mapper while mapping Service History");
 		}
 	
 	}
@@ -259,7 +265,9 @@ public class EmployeeRowMapper implements ResultSetExtractor<List<Employee>> {
 			}
 			currentEmployee.setDocuments(documents);
 		}catch(Exception e) {
-			log.error("Error in row mapper while mapping Service History: ",e);
+			log.error("Error in row mapper while mapping document: ",e);
+			throw new CustomException("ROWMAPPER_ERROR","Error in row mapper while mapping document");
+
 		}
 	}
 	
@@ -293,7 +301,8 @@ public class EmployeeRowMapper implements ResultSetExtractor<List<Employee>> {
 			currentEmployee.setDeactivationDetails(deactDetails);
 
 		}catch(Exception e) {
-			log.error("Error in row mapper while mapping Service History: ",e);
+			log.error("Error in row mapper while mapping deactivation details: ",e);
+			throw new CustomException("ROWMAPPER_ERROR","Error in row mapper while mapping deactivation details");
 		}
 	}
 
@@ -321,7 +330,8 @@ public class EmployeeRowMapper implements ResultSetExtractor<List<Employee>> {
 			currentEmployee.setReactivationDetails(reactDetails);
 
 		}catch(Exception e) {
-			log.error("Error in row mapper while mapping Service History: ",e);
+			log.error("Error in row mapper while mapping reactivation details ",e);
+			throw new CustomException("ROWMAPPER_ERROR","Error in row mapper while mapping reactivation details");
 		}
 	}
 
