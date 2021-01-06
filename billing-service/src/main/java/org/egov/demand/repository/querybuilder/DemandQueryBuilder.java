@@ -180,10 +180,10 @@ public class DemandQueryBuilder {
 			preparedStatementValues.add(demandCriteria.getBusinessService());
 		}
 		
-		if(demandCriteria.isPaymentCompleted() == true){
+		if(demandCriteria.getIsPaymentCompleted() != null){
 			addAndClause(demandQuery);
 			demandQuery.append("dmd.ispaymentcompleted = ?");
-			preparedStatementValues.add(demandCriteria.isPaymentCompleted());
+			preparedStatementValues.add(demandCriteria.getIsPaymentCompleted());
 		}
 		
 		if (demandCriteria.getPeriodFrom() != null) {

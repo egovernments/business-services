@@ -86,7 +86,7 @@ public class DemandCriteria {
 	private String status;
 	
 	@Default
-	private boolean isPaymentCompleted = false;
+	private Boolean isPaymentCompleted = false;
 	
 	@Default
 	private Boolean receiptRequired=false;
