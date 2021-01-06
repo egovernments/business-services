@@ -253,9 +253,10 @@ public class DemandRepository {
 				ps.setString(8, status);
 				ps.setObject(9, util.getPGObject(demand.getAdditionalDetails()));
 				ps.setObject(10, demand.getBillExpiryTime());
-				ps.setString(11, demand.getId());
-				ps.setString(12, demand.getTenantId());
-				ps.setBoolean(13, demand.getIsPaymentCompleted());
+				ps.setBoolean(11, demand.getIsPaymentCompleted());
+				ps.setString(12, demand.getId());
+				ps.setString(13, demand.getTenantId());
+				
 			}
 
 			@Override
