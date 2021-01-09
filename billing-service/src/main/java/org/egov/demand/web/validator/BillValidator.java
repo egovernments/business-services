@@ -3,15 +3,21 @@ package org.egov.demand.web.validator;
 import static org.egov.demand.util.Constants.BILL_GEN_MANDATORY_FIELDS_MISSING_KEY;
 import static org.egov.demand.util.Constants.BILL_GEN_MANDATORY_FIELDS_MISSING_MSG;
 
+import org.egov.common.contract.request.RequestInfo;
 import org.egov.demand.model.BillSearchCriteria;
 import org.egov.demand.model.GenerateBillCriteria;
+import org.egov.demand.util.Util;
 import org.egov.tracer.model.CustomException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 
 @Component
 public class BillValidator {
+	
+	@Autowired
+	private Util util;
 	
 	/**
 	 * validtes the bill gen criteria
@@ -33,8 +39,10 @@ public class BillValidator {
 
 	}
 
-	public void validateBillSearchCriteria(BillSearchCriteria billCriteria, Errors errors) {
+	public void validateBillSearchCriteria(BillSearchCriteria billCriteria, RequestInfo requestInfo) {
 
+		util.validateTenantIdForUserType(billCriteria.getTenantId(), requestInfo);
+		
 		if (billCriteria.getBillId() == null && CollectionUtils.isEmpty(billCriteria.getConsumerCode())
 				&& billCriteria.getMobileNumber() == null && billCriteria.getEmail() == null) {
 
