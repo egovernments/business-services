@@ -24,7 +24,9 @@ public class BillValidator {
 	 * 
 	 * @param generateBillCriteria
 	 */
-	public void validateBillGenRequest(GenerateBillCriteria generateBillCriteria) {
+	public void validateBillGenRequest(GenerateBillCriteria generateBillCriteria, RequestInfo requestInfo) {
+		
+		util.validateTenantIdForUserType(generateBillCriteria.getTenantId(), requestInfo);
 
 		boolean demandIdNotProvided = null == generateBillCriteria.getDemandId();
 			
