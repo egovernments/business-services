@@ -76,7 +76,7 @@ public class AmendmentController {
 	@Autowired
 	private ResponseFactory responseFactory;
 	
-	@PostMapping("_search")
+	@PostMapping("/_search")
 	public ResponseEntity<?> search(@RequestBody RequestInfoWrapper requestInfoWrapper,
 			@ModelAttribute @Valid AmendmentCriteria amendmentCriteria) {
 
@@ -94,7 +94,7 @@ public class AmendmentController {
 	 * @return ResponseEntity<?>
 	 */
 
-	@PostMapping("_create")
+	@PostMapping("/_create")
 	@ResponseBody
 	public ResponseEntity<?> create(@RequestBody @Valid AmendmentRequest amendmentRequest) {
 
