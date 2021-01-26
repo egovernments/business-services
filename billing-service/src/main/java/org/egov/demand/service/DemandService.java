@@ -40,9 +40,6 @@
 package org.egov.demand.service;
 
 import static org.egov.demand.util.Constants.ADVANCE_TAXHEAD_JSONPATH_CODE;
-import static org.egov.demand.util.Constants.MDMS_CODE_FILTER;
-import static org.egov.demand.util.Constants.MDMS_MASTER_NAMES;
-import static org.egov.demand.util.Constants.MODULE_NAME;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -76,7 +73,6 @@ import org.egov.demand.web.contract.UserResponse;
 import org.egov.demand.web.contract.UserSearchRequest;
 import org.egov.demand.web.contract.factory.ResponseFactory;
 import org.egov.demand.web.validator.DemandValidatorV1;
-import org.egov.mdms.model.MdmsCriteriaReq;
 import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -124,14 +120,15 @@ public class DemandService {
 	/**
 	 * Method to create new demand 
 	 * 
-	 * generates ids and saves to the repositroy
+	 * generates ids and saves to the repository
 	 * 
 	 * @param demandRequest
 	 * @return
 	 */
 	public DemandResponse create(DemandRequest demandRequest) {
 
-		DocumentContext mdmsData = getMDMSData(demandRequest);
+		DocumentContext mdmsData = util.getMDMSData(demandRequest.getRequestInfo(),
+				demandRequest.getDemands().get(0).getTenantId());
 
 		demandValidatorV1.validatedemandForCreate(demandRequest, true, mdmsData);
 
@@ -207,7 +204,8 @@ public class DemandService {
 	public DemandResponse updateAsync(DemandRequest demandRequest, PaymentBackUpdateAudit paymentBackUpdateAudit) {
 
 		log.debug("the demand service : " + demandRequest);
-		DocumentContext mdmsData = getMDMSData(demandRequest);
+		DocumentContext mdmsData = util.getMDMSData(demandRequest.getRequestInfo(),
+				demandRequest.getDemands().get(0).getTenantId());
 
 		demandValidatorV1.validateForUpdate(demandRequest, mdmsData);
 
@@ -432,25 +430,5 @@ public class DemandService {
 
 		return new ArrayList<>(demandsWithAdvance);
 	}
-	
-	/**
-	 * Fetches the required master data from MDMS service
-	 * @param demandRequest The request for which master data has to be fetched
-	 * @return
-	 */
-	private DocumentContext getMDMSData(DemandRequest demandRequest){
-		String tenantId = demandRequest.getDemands().get(0).getTenantId();
-		RequestInfo requestInfo = demandRequest.getRequestInfo();
-
-		/*
-		 * Preparing the mdms request with billing service master and calling the mdms search API
-		 */
-		MdmsCriteriaReq mdmsReq = util.prepareMdMsRequest(tenantId, MODULE_NAME, MDMS_MASTER_NAMES, MDMS_CODE_FILTER,
-				requestInfo);
-		DocumentContext mdmsData = util.getAttributeValues(mdmsReq);
-
-		return mdmsData;
-	}
-
 
 }

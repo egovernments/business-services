@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import org.egov.demand.model.AuditDetails;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,12 +29,19 @@ public class AmendmentUpdate {
 	@NotNull
 	@JsonProperty("amendmentId")
 	private String amendmentId;
+	
+	@JsonProperty("amendedDemandId")
+	private String amendedDemandId;
+	
+	@NotNull
+	@JsonProperty("tenantId")
+	private String tenantId;
 
 	@JsonProperty("auditDetails")
 	private AuditDetails auditDetails;
 
 	@JsonProperty("additionalDetails")
-	private Object additionalDetails;
+	private JsonNode additionalDetails;
 
 	@JsonProperty("workflow")
 	private ProcessInstance workflow;
@@ -41,5 +49,13 @@ public class AmendmentUpdate {
 	@JsonProperty("documents")
 	@Valid
 	private List<Document> documents;
+	
+	public AmendmentCriteria toSearchCriteria() {
+		
+		return AmendmentCriteria.builder()
+				.amendmentId(amendmentId)
+				.tenantId(tenantId)
+				.build();
+	}
 
 }

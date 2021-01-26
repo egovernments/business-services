@@ -1,6 +1,5 @@
 package org.egov.demand.amendment.model;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -12,6 +11,7 @@ import org.egov.demand.model.AuditDetails;
 import org.egov.demand.model.DemandDetail;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,10 +31,6 @@ public class Amendment {
 
 	@JsonProperty("id")
 	private String id;
-
-	@JsonProperty("demandIds")
-	@Valid
-	private List<String> demandIds;
 
 	@JsonProperty("amendedDemandId")
 	private String amendedDemandId;
@@ -78,15 +74,15 @@ public class Amendment {
 	private List<Document> documents;
 
 	@JsonProperty("effectiveFrom")
-	private BigDecimal effectiveFrom;
+	private Long effectiveFrom;
 
 	@JsonProperty("effectiveTill")
-	private BigDecimal effectiveTill;
+	private Long effectiveTill;
 
 	@JsonProperty("auditDetails")
 	private AuditDetails auditDetails;
 
 	@JsonProperty("additionalDetails")
-	private Object additionalDetails;
+	private JsonNode additionalDetails;
 
 }

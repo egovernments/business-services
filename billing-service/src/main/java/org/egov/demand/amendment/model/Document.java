@@ -1,5 +1,7 @@
 package org.egov.demand.amendment.model;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -16,13 +18,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Document   {
+	
   @JsonProperty("id")
   private String id;
 
   @JsonProperty("documentType")
+  @NotNull
   private String documentType;
 
   @JsonProperty("fileStore")
+  @NotNull
   private String fileStore;
 
   @JsonProperty("documentUid")

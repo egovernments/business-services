@@ -12,7 +12,9 @@ public enum AmendmentStatus {
   
   CANCELLED("CANCELLED"),
   
-  INWORKFLOW("INWORKFLOW");
+  INWORKFLOW("INWORKFLOW"),
+	
+  CONSUMED ("CONSUMED");	
 
   private String value;
 

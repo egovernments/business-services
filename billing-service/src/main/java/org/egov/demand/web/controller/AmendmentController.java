@@ -39,15 +39,18 @@
  */
 package org.egov.demand.web.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.Valid;
 
 import org.egov.common.contract.request.RequestInfo;
+import org.egov.common.contract.response.ResponseInfo;
 import org.egov.demand.amendment.model.Amendment;
 import org.egov.demand.amendment.model.AmendmentCriteria;
 import org.egov.demand.amendment.model.AmendmentRequest;
 import org.egov.demand.amendment.model.AmendmentResponse;
+import org.egov.demand.amendment.model.AmendmentUpdateRequest;
 import org.egov.demand.service.AmendmentService;
 import org.egov.demand.web.contract.RequestInfoWrapper;
 import org.egov.demand.web.contract.factory.ResponseFactory;
@@ -61,11 +64,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.extern.slf4j.Slf4j;
-
 @RestController
 @RequestMapping("/amendment")
-@Slf4j
 public class AmendmentController {
 
 	
@@ -98,15 +98,31 @@ public class AmendmentController {
 	@ResponseBody
 	public ResponseEntity<?> create(@RequestBody @Valid AmendmentRequest amendmentRequest) {
 
-		AmendmentResponse amendmentResponse = amendmentService.create(amendmentRequest);
+		Amendment amendment = amendmentService.create(amendmentRequest);
+		
+		ResponseInfo responseInfo = responseFactory.getResponseInfo(amendmentRequest.getRequestInfo(),
+				HttpStatus.CREATED);
+		AmendmentResponse amendmentResponse = AmendmentResponse.builder()
+				.amendments(Arrays.asList(amendment))
+				.responseInfo(responseInfo)
+				.build();
 		return new ResponseEntity<>(amendmentResponse, HttpStatus.CREATED);
 	}
 
-//	@PostMapping("_update")
-//	public ResponseEntity<?> update(@RequestHeader HttpHeaders headers, @RequestBody @Valid DemandRequest demandRequest) {
-//
-//		return new ResponseEntity<>(demandService.updateAsync(demandRequest, null), HttpStatus.CREATED);
-//	}
+	@PostMapping("_update")
+	public ResponseEntity<?> update(@RequestBody @Valid AmendmentUpdateRequest amendmentUpdateRequest) {
+
+		Amendment amendment = amendmentService.updateAmendment(amendmentUpdateRequest);
+		
+		ResponseInfo responseInfo = responseFactory.getResponseInfo(amendmentUpdateRequest.getRequestInfo(),
+				HttpStatus.OK);
+		AmendmentResponse amendmentResponse = AmendmentResponse.builder()
+				.amendments(Arrays.asList(amendment))
+				.responseInfo(responseInfo)
+				.build();
+		
+		return new ResponseEntity<>(amendmentResponse, HttpStatus.OK);
+	}
 
 
 }

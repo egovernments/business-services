@@ -39,8 +39,6 @@
  */
 package org.egov.demand.amendment.model;
 
-import java.util.Set;
-
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -54,19 +52,16 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AmendmentCriteria {
 
+	private String mobileNumber;
+	
 	@NotNull
 	private String tenantId;
 	
-	@NotNull
 	private String amendmentId;
 
-	private Set<String> consumerCode;
+	private String consumerCode;
 
 	private String businessService;
-
-	private Long periodFrom;
-
-	private Long periodTo;
 
 	private String status;
 }
