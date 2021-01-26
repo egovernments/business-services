@@ -61,14 +61,14 @@ public class AmendmentRepository {
 				ps.setString(6, amendment.getAmendmentReason().toString());
 				ps.setString(7, amendment.getReasonDocumentNumber());
 				ps.setString(8, amendment.getStatus().toString());
-				ps.setLong  (9, amendment.getEffectiveTill());
-				ps.setLong  (10, amendment.getEffectiveFrom());
+				ps.setObject(9, amendment.getEffectiveTill());
+				ps.setObject(10, amendment.getEffectiveFrom());
 				ps.setString(11, amendment.getAmendedDemandId());
 				ps.setString(12, auditDetails.getCreatedBy());
 				ps.setLong  (13, auditDetails.getCreatedTime());
 				ps.setString(14, auditDetails.getLastModifiedBy());
 				ps.setLong  (15, auditDetails.getLastModifiedTime());
-				ps.setObject(16, util.getPGObject(amendment));
+				ps.setObject(16, util.getPGObject(amendment.getAdditionalDetails()));
 
 			}
 		});

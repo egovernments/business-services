@@ -39,6 +39,8 @@ public class AmendmentService {
 	
 	
 	public List<Amendment> search(AmendmentCriteria amendmentCriteria) {
+		
+		amendmentValidator.validateAmendmentCriteriaForSearch(amendmentCriteria);
 		return amendmentRepository.getAmendments(amendmentCriteria);
 	}
 

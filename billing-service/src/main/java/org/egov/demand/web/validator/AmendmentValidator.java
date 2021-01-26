@@ -31,12 +31,14 @@ import org.egov.demand.service.DemandService;
 import org.egov.demand.util.Util;
 import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.DocumentContext;
 
+@Component
 public class AmendmentValidator {
 	
 	@Autowired
@@ -71,7 +73,7 @@ public class AmendmentValidator {
 		List<String> MissingTaxHeadCodes = new ArrayList<>();
 		Map<String,String> errorMap = new HashMap<>();
 
-		if (businessServiceCodes.contains(amendment.getBusinessService())) {
+		if (!businessServiceCodes.contains(amendment.getBusinessService())) {
 			errorMap.put("EG_BS_AMENDMENT_BUSINESS_ERROR",
 					"Business service not found for the given code : " + amendment.getBusinessService());
 		}
@@ -100,6 +102,9 @@ public class AmendmentValidator {
 					"From period cannot be greater or equal to end period in amendment");
 		}
 		
+		if(!CollectionUtils.isEmpty(errorMap))
+			throw new CustomException(errorMap);
+		
 		DemandCriteria demandCriteria = DemandCriteria.builder()
 		.tenantId(amendment.getTenantId())
 		.businessService(amendment.getBusinessService())
@@ -109,12 +114,8 @@ public class AmendmentValidator {
 		List<Demand> demands = demandService.getDemands(demandCriteria, amendmentRequest.getRequestInfo());
 		
 		if (CollectionUtils.isEmpty(demands))
-			errorMap.put("EG_BS_AMENDMENT_CONSUMERCODE_ERROR",
+			throw new CustomException("EG_BS_AMENDMENT_CONSUMERCODE_ERROR",
 					"No demands found in the system for the given consumer code, An amendment cannot be created without demands in the system.");
-
-		if(!CollectionUtils.isEmpty(errorMap))
-			throw new CustomException(errorMap);
-
 	}
 
 	public void validateAmendmentCriteriaForSearch(AmendmentCriteria criteria) {
@@ -138,8 +139,15 @@ public class AmendmentValidator {
 		
 		// get amendment ID format
 		amendment.setAmendmentId(UUID.randomUUID().toString());
-		
 		amendment.setAuditDetails(util.getAuditDetail(amendmentRequest.getRequestInfo()));
+		
+		amendment.getDemandDetails().forEach(detail -> {
+			detail.setId(UUID.randomUUID().toString());
+		});
+		
+		amendment.getDocuments().forEach(doc -> {
+			doc.setId(UUID.randomUUID().toString());
+		});
 		
 		if (props.getIsAmendmentworkflowEnabed()) {
 
