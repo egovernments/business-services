@@ -187,7 +187,7 @@ public class ApplicationProperties {
     @Value("${workflow.modulename}")
     private String amendmentWfModuleName;
     
-    @Value("${amendment.workflow.code}")
+    @Value("${amendment.workflow.name}")
     private String amendmentWfName;
 
 }

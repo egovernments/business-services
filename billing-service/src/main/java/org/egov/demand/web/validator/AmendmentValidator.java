@@ -182,10 +182,11 @@ public class AmendmentValidator {
 		if (props.getIsAmendmentworkflowEnabed()) {
 
 			ProcessInstance processInstance = ProcessInstance.builder()
-					.action(props.getAmendmentWfOpenAction())
-					.businessService(props.getAmendmentWfName())
 					.moduleName(props.getAmendmentWfModuleName())
+					.businessService(props.getAmendmentWfName())
+					.action(props.getAmendmentWfOpenAction())
 					.tenantId(amendment.getTenantId())
+					.id(amendment.getAmendmentId())
 					.build();
 			
 			amendment.setWorkflow(processInstance);
