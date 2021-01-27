@@ -1,5 +1,6 @@
 package org.egov.demand.amendment.model;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.egov.common.contract.request.RequestInfo;
@@ -23,6 +24,7 @@ public class AmendmentUpdateRequest {
 
 	@NotNull
 	@JsonProperty("AmendmentUpdate")
+	@Valid
 	private AmendmentUpdate amendmentUpdate;
 
 }

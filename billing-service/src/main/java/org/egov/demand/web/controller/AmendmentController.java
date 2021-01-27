@@ -44,7 +44,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.egov.common.contract.request.RequestInfo;
 import org.egov.common.contract.response.ResponseInfo;
 import org.egov.demand.amendment.model.Amendment;
 import org.egov.demand.amendment.model.AmendmentCriteria;
@@ -77,20 +76,21 @@ public class AmendmentController {
 	private ResponseFactory responseFactory;
 	
 	@PostMapping("/_search")
-	public ResponseEntity<?> search(@RequestBody RequestInfoWrapper requestInfoWrapper,
-			@ModelAttribute @Valid AmendmentCriteria amendmentCriteria) {
+	public ResponseEntity<?> search(@RequestBody RequestInfoWrapper requestInfoWrapper, @ModelAttribute @Valid AmendmentCriteria amendmentCriteria) {
 
-		RequestInfo requestInfo = requestInfoWrapper.getRequestInfo();
 		List<Amendment> amendments = amendmentService.search(amendmentCriteria);
-		AmendmentResponse response = AmendmentResponse.builder().amendments(amendments)
-				.responseInfo(responseFactory.getResponseInfo(requestInfo, HttpStatus.OK)).build();
+		
+		ResponseInfo responseInfo =responseFactory.getResponseInfo(requestInfoWrapper.getRequestInfo(), HttpStatus.OK);
+		AmendmentResponse response = AmendmentResponse.builder()
+				.responseInfo(responseInfo)
+				.amendments(amendments)
+				.build();
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	/**
-	 * API to create demands
+	 * API to create Amendments
 	 *
-	 * @param demandRequest
 	 * @return ResponseEntity<?>
 	 */
 
@@ -100,8 +100,7 @@ public class AmendmentController {
 
 		Amendment amendment = amendmentService.create(amendmentRequest);
 		
-		ResponseInfo responseInfo = responseFactory.getResponseInfo(amendmentRequest.getRequestInfo(),
-				HttpStatus.CREATED);
+		ResponseInfo responseInfo = responseFactory.getResponseInfo(amendmentRequest.getRequestInfo(), HttpStatus.CREATED);
 		AmendmentResponse amendmentResponse = AmendmentResponse.builder()
 				.amendments(Arrays.asList(amendment))
 				.responseInfo(responseInfo)
@@ -112,10 +111,14 @@ public class AmendmentController {
 	@PostMapping("_update")
 	public ResponseEntity<?> update(@RequestBody @Valid AmendmentUpdateRequest amendmentUpdateRequest) {
 
-		Amendment amendment = amendmentService.updateAmendment(amendmentUpdateRequest);
+		/*
+		 * Request is set to true for workflow updates
+		 * 
+		 * false for consumed amendment request which will not be triggered from outside of the service
+		 */
+		Amendment amendment = amendmentService.updateAmendment(amendmentUpdateRequest, true);
 		
-		ResponseInfo responseInfo = responseFactory.getResponseInfo(amendmentUpdateRequest.getRequestInfo(),
-				HttpStatus.OK);
+		ResponseInfo responseInfo = responseFactory.getResponseInfo(amendmentUpdateRequest.getRequestInfo(), HttpStatus.OK);
 		AmendmentResponse amendmentResponse = AmendmentResponse.builder()
 				.amendments(Arrays.asList(amendment))
 				.responseInfo(responseInfo)

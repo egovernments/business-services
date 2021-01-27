@@ -180,5 +180,14 @@ public class ApplicationProperties {
 
     @Value("${workflow.processinstance.search.path}")
     private String wfProcessInstanceSearchPath;
+    
+    @Value("${workflow.open.action}")
+    private String amendmentWfOpenAction;
+    
+    @Value("${workflow.modulename}")
+    private String amendmentWfModuleName;
+    
+    @Value("${amendment.workflow.code}")
+    private String amendmentWfName;
 
 }
