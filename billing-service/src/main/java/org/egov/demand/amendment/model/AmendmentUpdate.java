@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.egov.demand.amendment.model.enums.AmendmentStatus;
 import org.egov.demand.model.AuditDetails;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -45,6 +46,8 @@ public class AmendmentUpdate {
 
 	@JsonProperty("workflow")
 	private ProcessInstance workflow;
+	
+	private AmendmentStatus status;
 
 	@JsonProperty("documents")
 	@Valid

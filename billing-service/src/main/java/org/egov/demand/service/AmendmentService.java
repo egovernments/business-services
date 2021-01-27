@@ -39,7 +39,7 @@ public class AmendmentService {
 			
 			Amendment amendment = amendmentRequest.getAmendment();
 			State state = util.callWorkFlow(amendment.getWorkflow(), amendmentRequest.getRequestInfo());
-			amendment.setStatus(AmendmentStatus.fromValue(state.getState()));
+			amendment.setStatus(AmendmentStatus.fromValue(state.getApplicationStatus()));
 		}
 		amendmentRepository.saveAmendment(amendmentRequest);
 		
@@ -61,7 +61,6 @@ public class AmendmentService {
 	 */
 	public Amendment updateAmendment(AmendmentUpdateRequest amendmentUpdateRequest, Boolean isRequestForWorkflowUpdate) {
 
-		String resultantStatus = null;
 		AmendmentUpdate amendmentUpdate = amendmentUpdateRequest.getAmendmentUpdate();
 		amendmentValidator.validateAndEnrichAmendmentForUpdate(amendmentUpdateRequest, isRequestForWorkflowUpdate);
 		
@@ -69,14 +68,10 @@ public class AmendmentService {
 
 			State resultantState = util.callWorkFlow(amendmentUpdate.getWorkflow(), amendmentUpdateRequest.getRequestInfo());
 			amendmentUpdate.getWorkflow().setState(resultantState);
-			resultantStatus = resultantState.getState();
-		} else {
-			resultantStatus = AmendmentStatus.CONSUMED.toString();
+			amendmentUpdate.setStatus(AmendmentStatus.fromValue(resultantState.getApplicationStatus()));
 		}
-		
-		amendmentRepository.updateAmendment(amendmentUpdate, resultantStatus);
-		
-		if(isRequestForWorkflowUpdate && resultantStatus.equalsIgnoreCase(AmendmentStatus.ACTIVE.toString())) {
+		amendmentRepository.updateAmendment(amendmentUpdate);
+		if(isRequestForWorkflowUpdate && amendmentUpdate.getStatus().equals(AmendmentStatus.ACTIVE)) {
 			// trigger demand update with new demand-details
 		}
 		return search(amendmentUpdate.toSearchCriteria()).get(0);

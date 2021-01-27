@@ -11,6 +11,7 @@ import org.egov.demand.amendment.model.Amendment;
 import org.egov.demand.amendment.model.Document;
 import org.egov.demand.amendment.model.enums.AmendmentReason;
 import org.egov.demand.amendment.model.enums.AmendmentStatus;
+import org.egov.demand.model.AuditDetails;
 import org.egov.demand.model.DemandDetail;
 import org.egov.demand.util.Util;
 import org.postgresql.util.PGobject;
@@ -39,6 +40,34 @@ public class AmendmentRowMapper implements ResultSetExtractor<List<Amendment>> {
 
 			if (amendment == null) {
 
+					
+				Long effectiveFrom = rs.getLong("effectiveFrom");
+				if (rs.wasNull()) {
+					effectiveFrom = null;
+				}
+
+				Long effectiveTill = rs.getLong("effectiveTill");
+				if (rs.wasNull()) {
+					effectiveTill = null;
+				}
+
+				Long createdTime = rs.getLong("createdTime");
+				if (rs.wasNull()) {
+					createdTime = null;
+				}
+
+				Long lastModifiedTime = rs.getLong("lastModifiedTime");
+				if (rs.wasNull()) {
+					lastModifiedTime = null;
+				}
+				
+				AuditDetails auditDetails = AuditDetails.builder()
+						.lastModifiedBy(rs.getString("lastModifiedBy"))
+						.createdBy(rs.getString("createdBy"))
+						.lastModifiedTime(lastModifiedTime)
+						.createdTime(createdTime)
+						.build();
+				
 				amendment = Amendment.builder()
 						.additionalDetails(util.getJsonValue((PGobject) rs.getObject("additionaldetails")))
 						.amendmentReason(AmendmentReason.fromValue(rs.getString("amendmentReason")))
@@ -47,17 +76,16 @@ public class AmendmentRowMapper implements ResultSetExtractor<List<Amendment>> {
 						.amendedDemandId(rs.getString("amendedDemandId"))
 						.businessService(rs.getString("businessService"))
 						.consumerCode(rs.getString("consumerCode"))
-						.effectiveFrom(rs.getLong("effectiveFrom"))
-						.effectiveTill(rs.getLong("effectiveTill"))
 						.tenantId(rs.getString("tenantId"))
 						.id(rs.getString("amendmentuuid"))
-						.amendmentId(amendmentId)
 						.demandDetails(new ArrayList<>())
-						/*
-						 * Initiating with empty arrays because document and tax-details are mandatory
-						 * for amendment
-						 */
-						.documents(new ArrayList<>()) 
+						.documents(new ArrayList<>())	
+						/* Initiating with empty arrays for document and tax-details because 
+						 * they are always mandatory for amendment */
+						.effectiveFrom(effectiveFrom)
+						.effectiveTill(effectiveTill)
+						.auditDetails(auditDetails)
+						.amendmentId(amendmentId)
 						.build();
 				
 						

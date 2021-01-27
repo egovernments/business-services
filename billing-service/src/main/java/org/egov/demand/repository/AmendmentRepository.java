@@ -134,7 +134,7 @@ public class AmendmentRepository {
 	}
 
 	@Transactional
-	public void updateAmendment(AmendmentUpdate amendmentUpdate, String state) {
+	public void updateAmendment(AmendmentUpdate amendmentUpdate) {
 			
 			AuditDetails auditDetails = amendmentUpdate.getAuditDetails();
 			jdbcTemplate.update(AMENDMENT_UPDATE_QUERY, new PreparedStatementSetter() {
@@ -142,7 +142,7 @@ public class AmendmentRepository {
 				@Override
 				public void setValues(PreparedStatement ps) throws SQLException {
 
-					ps.setString(1, state);
+					ps.setString(1, amendmentUpdate.getStatus().toString());
 					ps.setString(2, amendmentUpdate.getAmendedDemandId());
 					ps.setString(3, auditDetails.getLastModifiedBy());
 					ps.setLong(4, auditDetails.getLastModifiedTime());
