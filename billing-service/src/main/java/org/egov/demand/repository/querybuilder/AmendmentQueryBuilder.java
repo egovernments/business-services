@@ -65,7 +65,7 @@ public class AmendmentQueryBuilder {
 
 			addAndClause(queryBuilder);
 			queryBuilder.append("amendment.status=?");
-			preparedStatementValues.add(amendmentCriteria.getStatus());
+			preparedStatementValues.add(amendmentCriteria.getStatus().toString());
 		}
 		
 		addPagingClause(queryBuilder, preparedStatementValues);
