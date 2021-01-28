@@ -138,7 +138,11 @@ public class AmendmentService {
 				Collections.sort(demands, Comparator.comparing(Demand::getTaxPeriodFrom)
 						.thenComparing(Demand::getTaxPeriodTo).reversed());
 			Demand demand = demands.get(0);
-			amendment.getDemandDetails().forEach(detail -> detail.setAuditDetails(auditDetails));
+			amendment.getDemandDetails().forEach(detail -> {
+			
+				detail.setAuditDetails(auditDetails);
+				detail.setDemandId(demand.getId());
+			});
 			demand.getDemandDetails().addAll(amendment.getDemandDetails());
 			demandService.update(new DemandRequest(requestInfo, Arrays.asList(demand)), null);
 			
