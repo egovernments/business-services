@@ -142,6 +142,7 @@ public class AmendmentService {
 			
 				detail.setAuditDetails(auditDetails);
 				detail.setDemandId(demand.getId());
+				detail.setTenantId(demand.getTenantId());
 			});
 			demand.getDemandDetails().addAll(amendment.getDemandDetails());
 			demandService.update(new DemandRequest(requestInfo, Arrays.asList(demand)), null);
