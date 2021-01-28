@@ -112,7 +112,7 @@ public class AmendmentRepository {
 				ps.setString(1, doc.getId());
 				ps.setString(2, amendmentId); // amendmentId as demandId
 				ps.setString(3, doc.getDocumentType());
-				ps.setString(4, doc.getFileStore());
+				ps.setString(4, doc.getFileStoreId());
 				ps.setString(5, doc.getDocumentUid());
 				ps.setString(6, "ACTIVE"); // hard-coded to active since no change possible
 				

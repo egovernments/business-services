@@ -132,7 +132,7 @@ public class AmendmentRowMapper implements ResultSetExtractor<List<Amendment>> {
 		Document newDoc = Document.builder()
 				.documentType(rs.getString("documentType"))
 				.documentUid(rs.getString("documentUid"))
-				.fileStore(rs.getString("fileStoreid"))
+				.fileStoreId(rs.getString("fileStoreid"))
 				.id(docId)
 				.build();
 		
