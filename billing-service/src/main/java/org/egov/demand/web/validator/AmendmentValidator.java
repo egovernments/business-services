@@ -129,9 +129,9 @@ public class AmendmentValidator {
 		
 		List<Demand> demands = demandService.getDemands(demandCriteria, amendmentRequest.getRequestInfo());
 		
-//		if (CollectionUtils.isEmpty(demands))
-//			throw new CustomException("EG_BS_AMENDMENT_CONSUMERCODE_ERROR",
-//					"No demands found in the system for the given consumer code, An amendment cannot be created without demands in the system.");
+		if (CollectionUtils.isEmpty(demands))
+			throw new CustomException("EG_BS_AMENDMENT_CONSUMERCODE_ERROR",
+					"No demands found in the system for the given consumer code, An amendment cannot be created without demands in the system.");
 	}
 
 	/**
