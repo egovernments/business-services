@@ -145,7 +145,8 @@ public class DemandService {
 		RequestInfo requestInfo = demandRequest.getRequestInfo();
 		List<Demand> demands = demandRequest.getDemands();
 		AuditDetails auditDetail = util.getAuditDetail(requestInfo);
-
+		
+		List<AmendmentUpdate> amendmentUpdates = consumeAmendmentIfExists(demands);
 		generateAndSetIdsForNewDemands(demands, auditDetail);
 
 		List<Demand> demandsToBeCreated = new ArrayList<>();
@@ -161,7 +162,6 @@ public class DemandService {
 			demandsToBeCreated.addAll(demandRequest.getDemands());
 		}
 
-		List<AmendmentUpdate> amendmentUpdates = consumeAmendmentIfExists(demandsToBeCreated);
 		save(new DemandRequest(requestInfo,demandsToBeCreated));
 		if (!CollectionUtils.isEmpty(amendmentUpdates))
 			amendmentRepository.updateAmendment(amendmentUpdates);
