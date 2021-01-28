@@ -41,6 +41,8 @@ package org.egov.demand.amendment.model;
 
 import javax.validation.constraints.NotNull;
 
+import org.egov.demand.amendment.model.enums.AmendmentStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -63,5 +65,5 @@ public class AmendmentCriteria {
 
 	private String businessService;
 
-	private String status;
+	private AmendmentStatus status;
 }

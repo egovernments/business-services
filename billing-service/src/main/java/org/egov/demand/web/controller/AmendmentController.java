@@ -111,12 +111,7 @@ public class AmendmentController {
 	@PostMapping("_update")
 	public ResponseEntity<?> update(@RequestBody @Valid AmendmentUpdateRequest amendmentUpdateRequest) {
 
-		/*
-		 * Request is set to true for workflow updates
-		 * 
-		 * false for consumed amendment request which will not be triggered from outside of the service
-		 */
-		Amendment amendment = amendmentService.updateAmendment(amendmentUpdateRequest, true);
+		Amendment amendment = amendmentService.updateAmendment(amendmentUpdateRequest);
 		
 		ResponseInfo responseInfo = responseFactory.getResponseInfo(amendmentUpdateRequest.getRequestInfo(), HttpStatus.OK);
 		AmendmentResponse amendmentResponse = AmendmentResponse.builder()

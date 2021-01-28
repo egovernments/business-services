@@ -52,6 +52,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.egov.common.contract.request.RequestInfo;
+import org.egov.demand.amendment.model.Amendment;
+import org.egov.demand.amendment.model.AmendmentCriteria;
+import org.egov.demand.amendment.model.AmendmentUpdate;
+import org.egov.demand.amendment.model.enums.AmendmentStatus;
 import org.egov.demand.config.ApplicationProperties;
 import org.egov.demand.model.ApportionDemandResponse;
 import org.egov.demand.model.AuditDetails;
@@ -61,6 +65,7 @@ import org.egov.demand.model.DemandApportionRequest;
 import org.egov.demand.model.DemandCriteria;
 import org.egov.demand.model.DemandDetail;
 import org.egov.demand.model.PaymentBackUpdateAudit;
+import org.egov.demand.repository.AmendmentRepository;
 import org.egov.demand.repository.BillRepositoryV2;
 import org.egov.demand.repository.DemandRepository;
 import org.egov.demand.repository.ServiceRequestRepository;
@@ -104,6 +109,9 @@ public class DemandService {
 	
 	@Autowired
 	private ServiceRequestRepository serviceRequestRepository;
+	
+	@Autowired
+	private AmendmentRepository amendmentRepository;
 	
 	@Autowired
 	private BillRepositoryV2 billRepoV2;
@@ -153,7 +161,10 @@ public class DemandService {
 			demandsToBeCreated.addAll(demandRequest.getDemands());
 		}
 
+		List<AmendmentUpdate> amendmentUpdates = consumeAmendmentIfExists(demandsToBeCreated);
 		save(new DemandRequest(requestInfo,demandsToBeCreated));
+		if (!CollectionUtils.isEmpty(amendmentUpdates))
+			amendmentRepository.updateAmendment(amendmentUpdates);
 
 		if(!CollectionUtils.isEmpty(demandToBeUpdated))
 			update(new DemandRequest(requestInfo,demandToBeUpdated), null);
@@ -430,5 +441,42 @@ public class DemandService {
 
 		return new ArrayList<>(demandsWithAdvance);
 	}
+	
+	/**
+	 * Method to add demand details from amendment if exists in DB
+	 * @param demandRequest
+	 */
+	private List<AmendmentUpdate> consumeAmendmentIfExists(List<Demand> demands) {
 
+		List<AmendmentUpdate> amendmentUpdateList = new ArrayList<>();
+
+		for (Demand demand : demands) {
+		
+			AmendmentCriteria amendmentCriteria = AmendmentCriteria.builder()
+					.consumerCode(demand.getConsumerCode())
+					.tenantId(demand.getTenantId())
+					.status(AmendmentStatus.ACTIVE)
+					.build();
+
+			List<Amendment> amendments = amendmentRepository.getAmendments(amendmentCriteria);
+			if (CollectionUtils.isEmpty(amendments))
+				continue;
+
+			Amendment amendment = amendments.get(0);
+			demand.getDemandDetails().addAll(amendment.getDemandDetails());
+			
+			AmendmentUpdate amendmentUpdate = AmendmentUpdate.builder()
+					.additionalDetails(amendment.getAdditionalDetails())
+					.amendedDemandId(demand.getId())
+					.amendmentId(amendment.getAmendmentId())
+					.auditDetails(demand.getAuditDetails())
+					.status(AmendmentStatus.CONSUMED)
+					.tenantId(demand.getTenantId())
+					.build();
+			amendmentUpdateList.add(amendmentUpdate);
+		}
+
+		return amendmentUpdateList;
+	}
+	
 }

@@ -1,8 +1,8 @@
 package org.egov.demand.repository;
 
 import static org.egov.demand.repository.querybuilder.AmendmentQueryBuilder.AMENDMENT_INSERT_QUERY;
-import static org.egov.demand.repository.querybuilder.AmendmentQueryBuilder.AMENDMENT_UPDATE_QUERY;
 import static org.egov.demand.repository.querybuilder.AmendmentQueryBuilder.AMENDMENT_TAXDETAIL_INSERT_QUERY;
+import static org.egov.demand.repository.querybuilder.AmendmentQueryBuilder.AMENDMENT_UPDATE_QUERY;
 import static org.egov.demand.repository.querybuilder.AmendmentQueryBuilder.DOCUMET_INSERT_QUERY;
 
 import java.sql.PreparedStatement;
@@ -95,7 +95,6 @@ public class AmendmentRepository {
 			
 			@Override
 			public int getBatchSize() {
-				// TODO Auto-generated method stub
 				return demandDetails.size();
 			}
 		});
@@ -120,7 +119,6 @@ public class AmendmentRepository {
 			
 			@Override
 			public int getBatchSize() {
-				// TODO Auto-generated method stub
 				return documents.size();
 			}
 		});
@@ -134,14 +132,17 @@ public class AmendmentRepository {
 	}
 
 	@Transactional
-	public void updateAmendment(AmendmentUpdate amendmentUpdate) {
+	public void updateAmendment(List<AmendmentUpdate> amendmentUpdates) {
 			
-			AuditDetails auditDetails = amendmentUpdate.getAuditDetails();
-			jdbcTemplate.update(AMENDMENT_UPDATE_QUERY, new PreparedStatementSetter() {
+			
+			jdbcTemplate.batchUpdate(AMENDMENT_UPDATE_QUERY, new BatchPreparedStatementSetter() {
 
 				@Override
-				public void setValues(PreparedStatement ps) throws SQLException {
+				public void setValues(PreparedStatement ps, int rowNum) throws SQLException {
 
+					AmendmentUpdate amendmentUpdate = amendmentUpdates.get(rowNum);
+					AuditDetails auditDetails = amendmentUpdate.getAuditDetails();
+					
 					ps.setString(1, amendmentUpdate.getStatus().toString());
 					ps.setString(2, amendmentUpdate.getAmendedDemandId());
 					ps.setString(3, auditDetails.getLastModifiedBy());
@@ -150,6 +151,12 @@ public class AmendmentRepository {
 					ps.setString(6, amendmentUpdate.getTenantId());
 					ps.setString(7, amendmentUpdate.getAmendmentId());
 				}
+
+				@Override
+				public int getBatchSize() {
+					return amendmentUpdates.size();
+				}
+
 			});
+		}
 	}
-}

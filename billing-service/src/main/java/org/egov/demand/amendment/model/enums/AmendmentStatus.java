@@ -10,7 +10,7 @@ public enum AmendmentStatus {
 	  
   ACTIVE("ACTIVE"),
   
-  CANCELLED("CANCELLED"),
+  INACTIVE ("INACTIVE"),
   
   INWORKFLOW("INWORKFLOW"),
 	

@@ -10,7 +10,7 @@ public class AmendmentQueryBuilder {
 	
 	public static final String AMENDMENT_UPDATE_QUERY = "UPDATE egbs_amendment SET status=?, amendeddemandid=?, lastmodifiedby=?,"
 			+ " lastmodifiedtime=?, additionaldetails=? WHERE tenantid=? AND amendmentid=?;";
-
+	
 	public static final String AMENDMENT_INSERT_QUERY = "INSERT INTO egbs_amendment (id, tenantid, amendmentid, businessservice,"
 			+ " consumercode, amendmentreason, reasondocumentnumber, status, effectivetill, effectivefrom,"
 			+ " amendeddemandid, createdby, createdtime, lastmodifiedby, lastmodifiedtime, additionaldetails) "

@@ -3,7 +3,7 @@ package org.egov.demand.web.validator;
 import static org.egov.demand.util.Constants.BUSINESSSERVICE_PATH_CODE;
 import static org.egov.demand.util.Constants.TAXHEADMASTER_PATH_CODE;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,7 +77,6 @@ public class AmendmentValidator {
 		Map<String, Set<String>> businessTaxCodeSet = taxHeads.stream().collect(Collectors.groupingBy(
 				TaxHeadMaster::getService, Collectors.mapping(TaxHeadMaster::getCode, Collectors.toSet())));
 		
-		List<String> MissingTaxHeadCodes = new ArrayList<>();
 		Map<String,String> errorMap = new HashMap<>();
 
 		if (!businessServiceCodes.contains(amendment.getBusinessService())) {
@@ -86,14 +85,19 @@ public class AmendmentValidator {
 		}
 
 		Set<String> taxheadcodes = businessTaxCodeSet.get(amendment.getBusinessService());
-
+		List<BigDecimal> allPositiveAmounts = amendment.getDemandDetails().stream()
+				.filter(detail -> detail.getTaxAmount().compareTo(BigDecimal.ZERO) >= 0).map(DemandDetail::getTaxAmount)
+				.collect(Collectors.toList());
+		
+		if (allPositiveAmounts.size() != 0 && allPositiveAmounts.size() != amendment.getDemandDetails().size())
+			errorMap.put("EG_BS_AMENDMENT_TAXAMOUNT_ERROR", "All Tax amounts should either be positive or negative");
+	
 		if (!CollectionUtils.isEmpty(taxheadcodes)) {
 			
-			for (DemandDetail detail : amendment.getDemandDetails()) {
-				if (!taxheadcodes.contains(detail.getTaxHeadMasterCode()))
-					MissingTaxHeadCodes.add(detail.getTaxHeadMasterCode());
-			}
-			
+			List<String> MissingTaxHeadCodes = amendment.getDemandDetails().stream()
+					.filter(detail -> !taxheadcodes.contains(detail.getTaxHeadMasterCode()))
+					.map(DemandDetail::getTaxHeadMasterCode).collect(Collectors.toList());
+
 			if (!MissingTaxHeadCodes.isEmpty()) {
 				errorMap.put("EG_BS_AMENDMENT_TAXHEAD_ERROR",
 						"Taxheads not found for the following codes : " + MissingTaxHeadCodes);
@@ -201,7 +205,7 @@ public class AmendmentValidator {
 	 * Validating for update 
 	 * @param amendmentUpdateRequest
 	 */
-	public void validateAndEnrichAmendmentForUpdate(@Valid AmendmentUpdateRequest amendmentUpdateRequest, Boolean isRequestForWorkflowUpdate) {
+	public Amendment validateAndEnrichAmendmentForUpdate(@Valid AmendmentUpdateRequest amendmentUpdateRequest) {
 		
 		Map<String,String> errorMap = new HashMap<>();
 		AmendmentUpdate amendmentUpdate = amendmentUpdateRequest.getAmendmentUpdate();
@@ -217,16 +221,20 @@ public class AmendmentValidator {
 		 * validating workflow fields
 		 */
 		ProcessInstance workflow = amendmentUpdate.getWorkflow();
-		if (isRequestForWorkflowUpdate && props.getIsAmendmentworkflowEnabed() 
-				&& workflow.getAction() == null
-				|| workflow.getBusinessId() == null 
-				|| workflow.getBusinessService() == null
-				|| workflow.getModuleName() == null) {
-			
-			errorMap.put("EG_BS_AMENDMENT_UPDATE_WF_ERROR",
-					"Mandatory workflow fileds missing in the update request, Please add all the following fields module, businessservice, businessid and action");
-		}
 		
+		if (props.getIsAmendmentworkflowEnabed()) {
+			if (workflow.getAction() == null || workflow.getBusinessId() == null
+					|| workflow.getBusinessService() == null || workflow.getModuleName() == null) {
+
+				errorMap.put("EG_BS_AMENDMENT_UPDATE_WF_ERROR",
+						"Mandatory workflow fileds missing in the update request, Please add all the following fields module, businessservice, businessid and action");
+			}
+		} else if (null == amendmentUpdate
+				|| null != amendmentUpdate && amendmentUpdate.getStatus().equals(AmendmentStatus.INACTIVE)) {
+			throw new CustomException("EG_BS_AMENDMENT_UPDATE_WORKFLOW_ERROR",
+					"Amendment Update can ne used only to cancell the amendment if workflow is disbaled");
+		}	
+
 		if (!CollectionUtils.isEmpty(errorMap))
 			throw new CustomException(errorMap);
 		
@@ -235,6 +243,7 @@ public class AmendmentValidator {
 		 */
 		amendmentUpdate.setAdditionalDetails(util.jsonMerge(amendments.get(0).getAdditionalDetails(), amendmentUpdate.getAdditionalDetails()));
 		amendmentUpdate.setAuditDetails(util.getAuditDetail(amendmentUpdateRequest.getRequestInfo()));
+		return amendments.get(0);
 	}
 	
 }

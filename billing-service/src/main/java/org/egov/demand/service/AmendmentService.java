@@ -1,7 +1,13 @@
 package org.egov.demand.service;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.egov.common.contract.request.RequestInfo;
 import org.egov.demand.amendment.model.Amendment;
 import org.egov.demand.amendment.model.AmendmentCriteria;
 import org.egov.demand.amendment.model.AmendmentRequest;
@@ -10,11 +16,15 @@ import org.egov.demand.amendment.model.AmendmentUpdateRequest;
 import org.egov.demand.amendment.model.State;
 import org.egov.demand.amendment.model.enums.AmendmentStatus;
 import org.egov.demand.config.ApplicationProperties;
+import org.egov.demand.model.Demand;
+import org.egov.demand.model.DemandCriteria;
 import org.egov.demand.repository.AmendmentRepository;
 import org.egov.demand.util.Util;
+import org.egov.demand.web.contract.DemandRequest;
 import org.egov.demand.web.validator.AmendmentValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class AmendmentService {
@@ -26,55 +36,119 @@ public class AmendmentService {
 	private ApplicationProperties props;
 	
 	@Autowired
+	private DemandService demandService;
+	
+	@Autowired
 	private AmendmentValidator amendmentValidator;
 	
 	@Autowired
 	private AmendmentRepository amendmentRepository;
 	
-	public Amendment create(AmendmentRequest amendmentRequest) {
-		
-		amendmentValidator.validateAmendmentForCreate(amendmentRequest);
-		amendmentValidator.enrichAmendmentForCreate(amendmentRequest);
-		if (props.getIsAmendmentworkflowEnabed()) {
-			
-			Amendment amendment = amendmentRequest.getAmendment();
-			State state = util.callWorkFlow(amendment.getWorkflow(), amendmentRequest.getRequestInfo());
-			amendment.setStatus(AmendmentStatus.fromValue(state.getApplicationStatus()));
-		}
-		amendmentRepository.saveAmendment(amendmentRequest);
-		
-		return amendmentRequest.getAmendment();
-	}
-	
-	
+	/**
+	 * Search amendment based on criteria
+	 * @param amendmentCriteria
+	 */
 	public List<Amendment> search(AmendmentCriteria amendmentCriteria) {
 		
 		amendmentValidator.validateAmendmentCriteriaForSearch(amendmentCriteria);
 		return amendmentRepository.getAmendments(amendmentCriteria);
 	}
-
+	
 	/**
+	 * 
+	 * @param amendmentRequest
+	 */
+	public Amendment create(AmendmentRequest amendmentRequest) {
+		
+		RequestInfo requestInfo = amendmentRequest.getRequestInfo();
+		Amendment amendment = amendmentRequest.getAmendment();
+		
+		amendmentValidator.validateAmendmentForCreate(amendmentRequest);
+		amendmentValidator.enrichAmendmentForCreate(amendmentRequest);
+		if (props.getIsAmendmentworkflowEnabed()) {
+			
+			State state = util.callWorkFlow(amendment.getWorkflow(), requestInfo);
+			amendment.setStatus(AmendmentStatus.fromValue(state.getApplicationStatus()));
+		}
+		amendmentRepository.saveAmendment(amendmentRequest);
+		if (!props.getIsAmendmentworkflowEnabed()) {
+			updateDemandWithAmendmentTax(requestInfo, amendment);
+		}
+		return amendmentRequest.getAmendment();
+	}
+	
+	
+	/**
+	 * update method for amendment, used only with workflow. if workflow is not available then method is not called
 	 * 
 	 * @param amendmentUpdateRequest
 	 * @param isRequestForWorkflowUpdate
-	 * @return
 	 */
-	public Amendment updateAmendment(AmendmentUpdateRequest amendmentUpdateRequest, Boolean isRequestForWorkflowUpdate) {
-
-		AmendmentUpdate amendmentUpdate = amendmentUpdateRequest.getAmendmentUpdate();
-		amendmentValidator.validateAndEnrichAmendmentForUpdate(amendmentUpdateRequest, isRequestForWorkflowUpdate);
+	public Amendment updateAmendment(AmendmentUpdateRequest amendmentUpdateRequest) {
 		
-		if (isRequestForWorkflowUpdate) {
-
-			State resultantState = util.callWorkFlow(amendmentUpdate.getWorkflow(), amendmentUpdateRequest.getRequestInfo());
+		RequestInfo requestInfo = amendmentUpdateRequest.getRequestInfo();
+		AmendmentUpdate amendmentUpdate = amendmentUpdateRequest.getAmendmentUpdate();
+		Amendment amendmentFromSearch = amendmentValidator.validateAndEnrichAmendmentForUpdate(amendmentUpdateRequest);
+		
+		/*
+		 * Workflow update
+		 */
+		if (props.getIsAmendmentworkflowEnabed()) {
+			State resultantState = util.callWorkFlow(amendmentUpdate.getWorkflow(), requestInfo);
 			amendmentUpdate.getWorkflow().setState(resultantState);
 			amendmentUpdate.setStatus(AmendmentStatus.fromValue(resultantState.getApplicationStatus()));
 		}
-		amendmentRepository.updateAmendment(amendmentUpdate);
-		if(isRequestForWorkflowUpdate && amendmentUpdate.getStatus().equals(AmendmentStatus.ACTIVE)) {
-			// trigger demand update with new demand-details
+		
+		/*
+		 * amendment update 
+		 */
+		amendmentRepository.updateAmendment(Arrays.asList(amendmentUpdate));
+		
+		if (amendmentUpdate.getStatus().equals(AmendmentStatus.ACTIVE)) {
+			updateDemandWithAmendmentTax(requestInfo, amendmentFromSearch);
 		}
 		return search(amendmentUpdate.toSearchCriteria()).get(0);
+	}
+
+
+	/**
+	 * Method to update demand after an amendment is ACTIVE
+	 * 
+	 * if no demands found then ignored
+	 * 
+	 * @param requestInfo
+	 * @param amendment
+	 */
+	public void updateDemandWithAmendmentTax(RequestInfo requestInfo, Amendment amendment) {
+		
+		DemandCriteria demandCriteria = DemandCriteria.builder()
+				.consumerCode(Stream.of(amendment.getConsumerCode()).collect(Collectors.toSet()))
+				.businessService(amendment.getBusinessService())
+				.tenantId(amendment.getTenantId())
+				.isPaymentCompleted(false)
+				.build();
+		
+		List<Demand> demands = demandService.getDemands(demandCriteria, requestInfo);
+		if(!CollectionUtils.isEmpty(demands)) {
+			
+			if (demands.size() > 1)
+				Collections.sort(demands, Comparator.comparing(Demand::getTaxPeriodFrom)
+						.thenComparing(Demand::getTaxPeriodTo).reversed());
+			Demand demand = demands.get(0);
+			demand.getDemandDetails().addAll(amendment.getDemandDetails());
+			demandService.update(new DemandRequest(requestInfo, Arrays.asList(demand)), null);
+			
+			AmendmentUpdate amendmentUpdate = AmendmentUpdate.builder()
+					.additionalDetails(amendment.getAdditionalDetails())
+					.auditDetails(util.getAuditDetail(requestInfo))
+					.amendmentId(amendment.getAmendmentId())
+					.tenantId(amendment.getTenantId())
+					.status(AmendmentStatus.CONSUMED)
+					.amendedDemandId(demand.getId())
+					.build();
+			
+			amendmentRepository.updateAmendment(Arrays.asList(amendmentUpdate));
+		}
 	}
 
 }
