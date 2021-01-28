@@ -16,6 +16,7 @@ import org.egov.demand.amendment.model.AmendmentUpdateRequest;
 import org.egov.demand.amendment.model.State;
 import org.egov.demand.amendment.model.enums.AmendmentStatus;
 import org.egov.demand.config.ApplicationProperties;
+import org.egov.demand.model.AuditDetails;
 import org.egov.demand.model.Demand;
 import org.egov.demand.model.DemandCriteria;
 import org.egov.demand.repository.AmendmentRepository;
@@ -121,6 +122,7 @@ public class AmendmentService {
 	 */
 	public void updateDemandWithAmendmentTax(RequestInfo requestInfo, Amendment amendment) {
 		
+		
 		DemandCriteria demandCriteria = DemandCriteria.builder()
 				.consumerCode(Stream.of(amendment.getConsumerCode()).collect(Collectors.toSet()))
 				.businessService(amendment.getBusinessService())
@@ -131,20 +133,22 @@ public class AmendmentService {
 		List<Demand> demands = demandService.getDemands(demandCriteria, requestInfo);
 		if(!CollectionUtils.isEmpty(demands)) {
 			
+			AuditDetails auditDetails = util.getAuditDetail(requestInfo);
 			if (demands.size() > 1)
 				Collections.sort(demands, Comparator.comparing(Demand::getTaxPeriodFrom)
 						.thenComparing(Demand::getTaxPeriodTo).reversed());
 			Demand demand = demands.get(0);
+			amendment.getDemandDetails().forEach(detail -> detail.setAuditDetails(auditDetails));
 			demand.getDemandDetails().addAll(amendment.getDemandDetails());
 			demandService.update(new DemandRequest(requestInfo, Arrays.asList(demand)), null);
 			
 			AmendmentUpdate amendmentUpdate = AmendmentUpdate.builder()
 					.additionalDetails(amendment.getAdditionalDetails())
-					.auditDetails(util.getAuditDetail(requestInfo))
 					.amendmentId(amendment.getAmendmentId())
 					.tenantId(amendment.getTenantId())
 					.status(AmendmentStatus.CONSUMED)
 					.amendedDemandId(demand.getId())
+					.auditDetails(auditDetails)
 					.build();
 			
 			amendmentRepository.updateAmendment(Arrays.asList(amendmentUpdate));
