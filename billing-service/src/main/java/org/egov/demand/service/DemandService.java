@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -448,35 +449,50 @@ public class DemandService {
 	 */
 	private List<AmendmentUpdate> consumeAmendmentIfExists(List<Demand> demands) {
 
-		List<AmendmentUpdate> amendmentUpdateList = new ArrayList<>();
+		List<AmendmentUpdate> updateListForConsumedAmendments = new ArrayList<>();
+		Set<String> consumerCodes = demands.stream().map(Demand::getConsumerCode).collect(Collectors.toSet());
 
+		/*
+		 * Search amendments for all consumer-codes and keep in map of list based on consumer-codes
+		 */
+		AmendmentCriteria amendmentCriteria = AmendmentCriteria.builder()
+				.tenantId(demands.get(0).getTenantId())
+				.status(AmendmentStatus.ACTIVE)
+				.consumerCode(consumerCodes)
+				.build();
+		List<Amendment> amendmentsFromSearch = amendmentRepository.getAmendments(amendmentCriteria);
+		Map<String, List<Amendment>> mapOfConsumerCodeAndAmendmentsList = amendmentsFromSearch.stream()
+				.collect(Collectors.groupingBy(Amendment::getConsumerCode)); 
+		
+		/*
+		 * Add demand-details in to demand from all amendments existing for that consumer-code
+		 * 
+		 * Add the amendment to update list for consumed
+		 */
 		for (Demand demand : demands) {
 		
-			AmendmentCriteria amendmentCriteria = AmendmentCriteria.builder()
-					.consumerCode(demand.getConsumerCode())
-					.tenantId(demand.getTenantId())
-					.status(AmendmentStatus.ACTIVE)
-					.build();
-
-			List<Amendment> amendments = amendmentRepository.getAmendments(amendmentCriteria);
+			
+			List<Amendment> amendments = mapOfConsumerCodeAndAmendmentsList.get(demand.getConsumerCode());
 			if (CollectionUtils.isEmpty(amendments))
 				continue;
-
-			Amendment amendment = amendments.get(0);
-			demand.getDemandDetails().addAll(amendment.getDemandDetails());
 			
-			AmendmentUpdate amendmentUpdate = AmendmentUpdate.builder()
-					.additionalDetails(amendment.getAdditionalDetails())
-					.amendedDemandId(demand.getId())
-					.amendmentId(amendment.getAmendmentId())
-					.auditDetails(demand.getAuditDetails())
-					.status(AmendmentStatus.CONSUMED)
-					.tenantId(demand.getTenantId())
-					.build();
-			amendmentUpdateList.add(amendmentUpdate);
+			for (Amendment amendment : amendments) {
+				
+				demand.getDemandDetails().addAll(amendment.getDemandDetails());
+				
+				AmendmentUpdate amendmentUpdate = AmendmentUpdate.builder()
+						.additionalDetails(amendment.getAdditionalDetails())
+						.amendedDemandId(demand.getId())
+						.amendmentId(amendment.getAmendmentId())
+						.auditDetails(demand.getAuditDetails())
+						.status(AmendmentStatus.CONSUMED)
+						.tenantId(demand.getTenantId())
+						.build();
+				updateListForConsumedAmendments.add(amendmentUpdate);
+			}
 		}
 
-		return amendmentUpdateList;
+		return updateListForConsumedAmendments;
 	}
 	
 }

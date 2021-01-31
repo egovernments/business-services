@@ -47,10 +47,24 @@ public class AmendmentService {
 	
 	/**
 	 * Search amendment based on criteria
+	 * 
 	 * @param amendmentCriteria
 	 */
-	public List<Amendment> search(AmendmentCriteria amendmentCriteria) {
-		
+	public List<Amendment> search(AmendmentCriteria amendmentCriteria, RequestInfo requestInfo) {
+
+		if (amendmentCriteria.getMobileNumber() != null) {
+
+			DemandCriteria demandCriteria = DemandCriteria.builder()
+					.mobileNumber(amendmentCriteria.getMobileNumber())
+					.tenantId(amendmentCriteria.getTenantId())
+					.build();
+			
+			List<Demand> demands = demandService.getDemands(demandCriteria, requestInfo);
+			if (!CollectionUtils.isEmpty(demands)) {
+				amendmentCriteria.getConsumerCode()
+						.addAll(demands.stream().map(Demand::getConsumerCode).collect(Collectors.toSet()));
+			}
+		}
 		amendmentValidator.validateAmendmentCriteriaForSearch(amendmentCriteria);
 		return amendmentRepository.getAmendments(amendmentCriteria);
 	}
@@ -108,7 +122,7 @@ public class AmendmentService {
 		if (amendmentUpdate.getStatus().equals(AmendmentStatus.ACTIVE)) {
 			updateDemandWithAmendmentTax(requestInfo, amendmentFromSearch);
 		}
-		return search(amendmentUpdate.toSearchCriteria()).get(0);
+		return search(amendmentUpdate.toSearchCriteria(), requestInfo).get(0);
 	}
 
 

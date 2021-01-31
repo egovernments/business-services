@@ -18,7 +18,7 @@ import org.egov.demand.amendment.model.Document;
 import org.egov.demand.model.AuditDetails;
 import org.egov.demand.model.DemandDetail;
 import org.egov.demand.repository.querybuilder.AmendmentQueryBuilder;
-import org.egov.demand.rowmapper.AmendmentRowMapper;
+import org.egov.demand.repository.rowmapper.AmendmentRowMapper;
 import org.egov.demand.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;

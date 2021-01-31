@@ -78,7 +78,7 @@ public class AmendmentController {
 	@PostMapping("/_search")
 	public ResponseEntity<?> search(@RequestBody RequestInfoWrapper requestInfoWrapper, @ModelAttribute @Valid AmendmentCriteria amendmentCriteria) {
 
-		List<Amendment> amendments = amendmentService.search(amendmentCriteria);
+		List<Amendment> amendments = amendmentService.search(amendmentCriteria, requestInfoWrapper.getRequestInfo());
 		
 		ResponseInfo responseInfo =responseFactory.getResponseInfo(requestInfoWrapper.getRequestInfo(), HttpStatus.OK);
 		AmendmentResponse response = AmendmentResponse.builder()

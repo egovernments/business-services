@@ -189,5 +189,8 @@ public class ApplicationProperties {
     
     @Value("${amendment.workflow.name}")
     private String amendmentWfName;
-
+    
+    @Value("${amendment.id.format.name}")
+    private String amendmentIdFormatName;
+    
 }

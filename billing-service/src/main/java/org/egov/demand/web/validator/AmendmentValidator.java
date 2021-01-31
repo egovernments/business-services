@@ -12,9 +12,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.Valid;
 
+import org.egov.common.contract.request.RequestInfo;
 import org.egov.demand.amendment.model.Amendment;
 import org.egov.demand.amendment.model.AmendmentCriteria;
 import org.egov.demand.amendment.model.AmendmentRequest;
@@ -28,7 +30,9 @@ import org.egov.demand.model.DemandCriteria;
 import org.egov.demand.model.DemandDetail;
 import org.egov.demand.model.TaxHeadMaster;
 import org.egov.demand.repository.AmendmentRepository;
+import org.egov.demand.repository.IdGenRepo;
 import org.egov.demand.service.DemandService;
+import org.egov.demand.util.Constants;
 import org.egov.demand.util.Util;
 import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +53,9 @@ public class AmendmentValidator {
 	private ObjectMapper mapper;
 	
 	@Autowired
+	private IdGenRepo idGenRepo;
+	
+	@Autowired
 	private DemandService demandService;
 	
 	@Autowired
@@ -65,13 +72,43 @@ public class AmendmentValidator {
 	public void validateAmendmentForCreate(AmendmentRequest amendmentRequest) {
 
 		Amendment amendment = amendmentRequest.getAmendment();
-		DocumentContext mdmsData = util.getMDMSData(amendmentRequest.getRequestInfo(), amendmentRequest.getAmendment().getTenantId());
+		
+		
+		/*
+		 * verifying presence of workflow amendments with same consumer-code
+		 * 
+		 * verifying the consumer-code presence in demand system
+		 */
+		AmendmentCriteria amendmentCriteria = AmendmentCriteria.builder()
+				.consumerCode(Stream.of(amendment.getConsumerCode()).collect(Collectors.toSet()))
+				.tenantId(amendment.getTenantId())
+				.status(AmendmentStatus.INWORKFLOW)
+				.build();
+		
+		List<Amendment> amendmentsFromSearch = amendmentRepository.getAmendments(amendmentCriteria);
+		
+		if(!CollectionUtils.isEmpty(amendmentsFromSearch))
+			throw new CustomException("EG_BS_AMENDMENT_DUPLICATE_ERROR",
+					"An Amendment is already in workflow for given consumercode : " + amendment.getConsumerCode());
+		
+		DemandCriteria demandCriteria = DemandCriteria.builder()
+		.tenantId(amendment.getTenantId())
+		.businessService(amendment.getBusinessService())
+		.consumerCode(new HashSet<>(Arrays.asList(amendment.getConsumerCode())))
+		.build();
+		
+		List<Demand> demands = demandService.getDemands(demandCriteria, amendmentRequest.getRequestInfo());
+		
+		if (CollectionUtils.isEmpty(demands))
+			throw new CustomException("EG_BS_AMENDMENT_CONSUMERCODE_ERROR",
+					"No demands found in the system for the given consumer code, An amendment cannot be created without demands in the system.");
 		
 		/*
 		 * Extracting the respective masters from DocumentContext 
 		 * 
 		 * Validating the master data fields - business-service and tax-heads
 		 */
+		DocumentContext mdmsData = util.getMDMSData(amendmentRequest.getRequestInfo(), amendmentRequest.getAmendment().getTenantId());
 		List<String> businessServiceCodes = mdmsData.read(BUSINESSSERVICE_PATH_CODE);
 		List<TaxHeadMaster> taxHeads = Arrays.asList(mapper.convertValue(mdmsData.read(TAXHEADMASTER_PATH_CODE), TaxHeadMaster[].class));
 		Map<String, Set<String>> businessTaxCodeSet = taxHeads.stream().collect(Collectors.groupingBy(
@@ -121,21 +158,6 @@ public class AmendmentValidator {
 		
 		if(!CollectionUtils.isEmpty(errorMap))
 			throw new CustomException(errorMap);
-		
-		/*
-		 * verifying the consumer-code presence in demand system
-		 */
-		DemandCriteria demandCriteria = DemandCriteria.builder()
-		.tenantId(amendment.getTenantId())
-		.businessService(amendment.getBusinessService())
-		.consumerCode(new HashSet<>(Arrays.asList(amendment.getConsumerCode())))
-		.build();
-		
-		List<Demand> demands = demandService.getDemands(demandCriteria, amendmentRequest.getRequestInfo());
-		
-		if (CollectionUtils.isEmpty(demands))
-			throw new CustomException("EG_BS_AMENDMENT_CONSUMERCODE_ERROR",
-					"No demands found in the system for the given consumer code, An amendment cannot be created without demands in the system.");
 	}
 
 	/**
@@ -165,13 +187,20 @@ public class AmendmentValidator {
 	public void enrichAmendmentForCreate (AmendmentRequest amendmentRequest) {
 		
 		Amendment amendment = amendmentRequest.getAmendment();
-		
+		RequestInfo requestInfo = amendmentRequest.getRequestInfo();
 		amendment.setId(UUID.randomUUID().toString());
 		
-		// get amendment ID format TODO FIXME
-		amendment.setAmendmentId(UUID.randomUUID().toString());
-		amendment.setAuditDetails(util.getAuditDetail(amendmentRequest.getRequestInfo()));
+		/*
+		 * Id-Gen for amendment Id & UUID enrichment
+		 */
+		Boolean isCreditNote = amendment.getDemandDetails().get(0).getTaxAmount().compareTo(BigDecimal.ZERO) >= 0;
+		String creditOrDebitString = isCreditNote ? Constants.CREDIT_NOTE_VALUE : Constants.DEBIT_NOTE_VALUE; 
+		String amendmentId = idGenRepo.getId(requestInfo, amendment.getTenantId(), props.getAmendmentIdFormatName(), null, 1).get(0);
+		amendmentId = amendmentId.replace(Constants.NOTETYPE_REPLACE_STRING, creditOrDebitString);
+		amendmentId = amendmentId.replace(Constants.CONSUMERCODE_REPLACE_STRING, amendment.getConsumerCode());
+		amendment.setAmendmentId(amendmentId); 
 		
+		amendment.setAuditDetails(util.getAuditDetail(requestInfo));
 		amendment.getDemandDetails().forEach(detail -> {
 			detail.setId(UUID.randomUUID().toString());
 		});

@@ -3,10 +3,16 @@ package org.egov.demand.repository.querybuilder;
 import java.util.List;
 
 import org.egov.demand.amendment.model.AmendmentCriteria;
+import org.egov.demand.util.Util;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 @Component
 public class AmendmentQueryBuilder {
+	
+	@Autowired
+	private Util util;
 	
 	public static final String AMENDMENT_UPDATE_QUERY = "UPDATE egbs_amendment SET status=?, amendeddemandid=?, lastmodifiedby=?,"
 			+ " lastmodifiedtime=?, additionaldetails=? WHERE tenantid=? AND amendmentid=?;";
@@ -40,31 +46,31 @@ public class AmendmentQueryBuilder {
 		queryBuilder.append(" amendment.tenantid = ? ");
 		preparedStatementValues.add(amendmentCriteria.getTenantId());
 		
-		if (amendmentCriteria.getConsumerCode() != null) {
+		if (!CollectionUtils.isEmpty(amendmentCriteria.getConsumerCode())) {
 
 			addAndClause(queryBuilder);
-			queryBuilder.append("consumercode=?");
-			preparedStatementValues.add(amendmentCriteria.getConsumerCode());
+			queryBuilder.append(" consumercode IN "
+					+ util.getIdsQueryForList(amendmentCriteria.getConsumerCode(), preparedStatementValues));
 		}
 		
 		if (amendmentCriteria.getBusinessService() != null) {
 
 			addAndClause(queryBuilder);
-			queryBuilder.append("businessservice=?");
+			queryBuilder.append(" businessservice=? ");
 			preparedStatementValues.add(amendmentCriteria.getBusinessService());
 		}
 		
 		if (amendmentCriteria.getAmendmentId() != null) {
 
 			addAndClause(queryBuilder);
-			queryBuilder.append("amendment.amendmentid=?");
+			queryBuilder.append(" amendment.amendmentid=? ");
 			preparedStatementValues.add(amendmentCriteria.getAmendmentId());
 		}
 		
 		if (amendmentCriteria.getStatus() != null) {
 
 			addAndClause(queryBuilder);
-			queryBuilder.append("amendment.status=?");
+			queryBuilder.append(" amendment.status=? ");
 			preparedStatementValues.add(amendmentCriteria.getStatus().toString());
 		}
 		
@@ -74,9 +80,9 @@ public class AmendmentQueryBuilder {
 
 	private static void addPagingClause(StringBuilder amendmentQueryBuilder, List<Object> preparedStatementValues) {
 		
-		amendmentQueryBuilder.append(" LIMIT ?");
+		amendmentQueryBuilder.append(" LIMIT ? ");
 		preparedStatementValues.add(500);
-		amendmentQueryBuilder.append(" OFFSET ?");
+		amendmentQueryBuilder.append(" OFFSET ? ");
 		preparedStatementValues.add(0);
 	}
 	
