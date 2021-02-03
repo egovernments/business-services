@@ -1,6 +1,12 @@
 
 All notable changes to this module will be documented in this file.
 
+## 1.3.0 - 2021-01-31
+
+- Amenment APIs created and enabled
+
+## 1.3.0
+
 ## 1.2.2
 
 - fixed expiry date added in demand object
