@@ -9,7 +9,6 @@ All notable changes to this module will be documented in this file.
 
 - Amenment APIs created and enabled
 
-## 1.3.0
 
 ## 1.2.2
 
