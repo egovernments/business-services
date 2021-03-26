@@ -59,6 +59,7 @@ public class AmazonS3ClientServiceImpl implements AmazonS3ClientService
     {
         String orignalFileName = multipartFile.getOriginalFilename();
         String imageURL = "";
+        FileOutputStream fos = null;
         try {
 
             String randomString = RandomStringUtils.random(filenameLength, useLetters, useNumbers);
@@ -67,8 +68,8 @@ public class AmazonS3ClientServiceImpl implements AmazonS3ClientService
             //creating the file in the server (temporarily)
             File file = new File(fileName);
             FileOutputStream fos = new FileOutputStream(file);
+
             fos.write(multipartFile.getBytes());
-            fos.close();
 
             PutObjectRequest putObjectRequest = new PutObjectRequest(this.awsS3AudioBucket, fileName, file);
 
@@ -84,6 +85,12 @@ public class AmazonS3ClientServiceImpl implements AmazonS3ClientService
             file.delete();
         } catch (IOException | AmazonServiceException ex) {
             logger.error("error [" + ex.getMessage() + "] occurred while uploading [" + orignalFileName + "] ");
+        }finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                logger.error("Error occured while closing file output stream.");
+            }
         }
         return imageURL;
 
