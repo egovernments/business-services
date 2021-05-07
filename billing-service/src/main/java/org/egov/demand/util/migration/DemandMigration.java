@@ -117,7 +117,7 @@ public class DemandMigration {
 
 				apportionDemands(demands);
 				postDemands(demands);
-			} catch (CustomException e) {
+			} catch (Exception e) {
 
 				log.error("Migration failed at batch count of : " + i);
 				responseMap.put( "Migration failed at batch count : " + i, e.getMessage());
