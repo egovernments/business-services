@@ -41,7 +41,6 @@ package org.egov.demand.util;
 
 import java.util.List;
 
-import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -61,7 +60,7 @@ public class SequenceGenService {
 		List<String> idList = null;
 		try {
 			idList = jdbcTemplate.queryForList(demandIdQuery, new Object[] { rsSize }, String.class);
-		} catch (CustomException e) {
+		} catch (Exception e) {
 			log.error("the exception from demand ID gen : " + e);
 			throw e;
 		}
