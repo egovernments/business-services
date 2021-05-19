@@ -1,7 +1,7 @@
 package org.egov.demand.repository.querybuilder;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.egov.demand.model.BillSearchCriteria;
 import org.springframework.stereotype.Component;
@@ -144,7 +144,7 @@ public class BillQueryBuilder {
 	 * @param billIds
 	 * @param preparedStmtList
 	 */
-	public String getBillStatusUpdateQuery(Set<String> consumerCodes, List<Object> preparedStmtList) {
+	public String getBillStatusUpdateQuery(List<String> consumerCodes, List<Object> preparedStmtList) {
 
 		StringBuilder builder = new StringBuilder(BILL_STATUS_UPDATE_QUERY);
 
@@ -166,7 +166,7 @@ public class BillQueryBuilder {
 	 * @param preparedStmtList
 	 * @param query
 	 */
-	private void appendListToQuery(Set<String> values, List<Object> preparedStmtList, StringBuilder query) {
+	private void appendListToQuery(Collection<String> values, List<Object> preparedStmtList, StringBuilder query) {
 		int length = values.size();
 		String[] valueArray = values.toArray(new String[length]);
 
