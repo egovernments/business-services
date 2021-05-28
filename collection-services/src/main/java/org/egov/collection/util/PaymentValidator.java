@@ -52,6 +52,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -487,24 +489,30 @@ public class PaymentValidator {
 	 * 
 	 * @param payments
 	 * @param errorMap
-	 * @throws JsonProcessingException
-	 * @throws JsonMappingException
 	 */
 
 	private void validateIFSCCode(PaymentRequest paymentRequest) {
 		// TODO Auto-generated method stub
-
+		JsonNode razorPayIfscSearchResponse = null;
 		if (paymentRequest.getPayment().getIfscCode() != null) {
 
-			String respose = serviceRequestRepository
+			String response = serviceRequestRepository
 					.fetchGetResult(applicationProperties.getRazorPayUrl() + paymentRequest.getPayment().getIfscCode());
 			ObjectNode objectNode = (ObjectNode) paymentRequest.getPayment().getAdditionalDetails();
 			if (objectNode == null) {
 				ObjectMapper mapper = new ObjectMapper();
 				objectNode = mapper.createObjectNode();
+				
+					try {
+						razorPayIfscSearchResponse = mapper.readTree(response);
+					} catch (JsonProcessingException e) {
+						throw new CustomException("INVALID_PROCESS_EXCEPTION", e.getMessage());
+
+				} 
+				objectNode.set("bankDetails", razorPayIfscSearchResponse);
+				paymentRequest.getPayment().setAdditionalDetails(objectNode);
 			}
-			objectNode.put("bankDetails", respose);
-			paymentRequest.getPayment().setAdditionalDetails(objectNode);
+
 		}
 
 	}
