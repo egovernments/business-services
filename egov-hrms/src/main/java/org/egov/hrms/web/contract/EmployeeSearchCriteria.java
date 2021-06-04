@@ -52,9 +52,9 @@ public class EmployeeSearchCriteria {
 	
 	public String phone;
 
-	public Integer offset;
+	public Long offset;
 	
-	public Integer limit;
+	public Long limit;
 	
 	
 	public boolean isCriteriaEmpty(EmployeeSearchCriteria criteria) {
