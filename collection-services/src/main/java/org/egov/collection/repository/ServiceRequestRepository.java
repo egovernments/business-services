@@ -54,12 +54,12 @@ public class ServiceRequestRepository {
      */
     public String fetchGetResult(String uri) {
         
-        String response = null;
+        String response;
         try {
             response = restTemplate.exchange(uri, HttpMethod.GET, null, String.class).getBody();
         }catch(HttpClientErrorException e) {
             log.error("External Service threw an Exception: ",e);
-           // throw new ServiceCallException(e.getResponseBodyAsString());
+            throw new ServiceCallException(e.getResponseBodyAsString());
         }catch(Exception e) {
             log.error("Exception while fetching from searcher: ",e);
             throw new ServiceCallException(e.getMessage());
