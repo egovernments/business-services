@@ -257,7 +257,7 @@ public class PaymentRepository {
 	 */
 	public List<String> fetchIfsccode() {
 
-		return namedParameterJdbcTemplate.query("SELECT distinct ifsccode from egcl_payment ",
+		return namedParameterJdbcTemplate.query("SELECT distinct ifsccode from egcl_payment where ifsccode is not null ",
 				new SingleColumnRowMapper<>(String.class));
 
 	}
