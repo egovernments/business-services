@@ -40,7 +40,8 @@ public class PreExistPaymentService {
 			String response = serviceRequestRepository
 					.fetchGetResult(applicationProperties.getRazorPayUrl() + ifscCode);
 			try {
-				razorpayIfsccodeResponse = mapper.readTree(response);
+				if (StringUtils.isNotEmpty(response))
+					razorpayIfsccodeResponse = mapper.readTree(response);
 			} catch (JsonProcessingException e) {
 				throw new CustomException("INVALID_PROCESS_EXCEPTION", e.getMessage());
 			}
@@ -57,7 +58,8 @@ public class PreExistPaymentService {
 	@Transactional
 	public void updatePaymentBankDetails(String ifsccode) {
 		JsonNode bandetails = populateBankBranch(ifsccode);
-		paymentRepository.updatePaymentBankDetail(bandetails, ifsccode);
+		if (null != bandetails)
+			paymentRepository.updatePaymentBankDetail(bandetails, ifsccode);
 	}
 
 }
