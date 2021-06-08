@@ -272,11 +272,14 @@ public class PaymentRepository {
 
 	@Transactional
 	public void updatePaymentBankDetail(JsonNode additionaldetails, String ifsccode) {
-		List<MapSqlParameterSource> paymentSource = new ArrayList<>();
-		paymentSource.add(getParametersForBankDetailUpdate(additionaldetails, ifsccode));
+		List<MapSqlParameterSource> parameterSource = new ArrayList<>();
+		parameterSource.add(getParametersForBankDetailUpdate(additionaldetails, ifsccode));
 		namedParameterJdbcTemplate.batchUpdate(UPDATE_PAYMENT_BANKDETAIL_SQL,
-				paymentSource.toArray(new MapSqlParameterSource[0]));
+				parameterSource.toArray(new MapSqlParameterSource[0]));
+
+		List<MapSqlParameterSource> emptyAddtlParameterSource = new ArrayList<>();
+		emptyAddtlParameterSource.add(getParametersEmptyDtlBankDetailUpdate(additionaldetails, ifsccode));
 		namedParameterJdbcTemplate.batchUpdate(UPDATE_PAYMENT_BANKDETAIL_EMPTYADDTL_SQL,
-				paymentSource.toArray(new MapSqlParameterSource[0]));
+				emptyAddtlParameterSource.toArray(new MapSqlParameterSource[0]));
 	}
 }

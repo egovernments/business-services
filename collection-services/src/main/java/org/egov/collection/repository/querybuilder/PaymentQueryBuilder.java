@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class PaymentQueryBuilder {
@@ -792,14 +794,25 @@ public class PaymentQueryBuilder {
     }
 
 
+	public static MapSqlParameterSource getParametersForBankDetailUpdate(JsonNode additionalDetails, String ifsccode) {
+		MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+		sqlParameterSource.addValue("additionaldetails", getJsonb(additionalDetails));
+		sqlParameterSource.addValue("ifsccode", ifsccode);
+		return sqlParameterSource;
 
-    public static MapSqlParameterSource getParametersForBankDetailUpdate(JsonNode additionalDetails,String ifsccode) {
-        MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource(); 
-        sqlParameterSource.addValue("additionaldetails",getJsonb(additionalDetails));
-        sqlParameterSource.addValue("ifsccode",ifsccode );
-        return sqlParameterSource;
+	}
 
-    }
+	public static MapSqlParameterSource getParametersEmptyDtlBankDetailUpdate(JsonNode additionalDetails,
+			String ifsccode) {
+		MapSqlParameterSource sqlParameterSource = new MapSqlParameterSource();
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objectNode = mapper.createObjectNode();
+		objectNode.set("bankDetails", additionalDetails);
+		sqlParameterSource.addValue("additionaldetails", getJsonb(objectNode));
+		sqlParameterSource.addValue("ifsccode", ifsccode);
+		return sqlParameterSource;
+
+	}
 
 
 

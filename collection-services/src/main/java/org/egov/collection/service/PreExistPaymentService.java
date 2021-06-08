@@ -57,9 +57,9 @@ public class PreExistPaymentService {
 	 */
 	@Transactional
 	public void updatePaymentBankDetails(String ifsccode) {
-		JsonNode bandetails = populateBankBranch(ifsccode);
-		if (null != bandetails)
-			paymentRepository.updatePaymentBankDetail(bandetails, ifsccode);
+		JsonNode bankdetails = populateBankBranch(ifsccode);
+		if (null != bankdetails)
+			paymentRepository.updatePaymentBankDetail(bankdetails, ifsccode);
 	}
 
 }
