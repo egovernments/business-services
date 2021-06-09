@@ -281,5 +281,9 @@ public class PaymentRepository {
 		emptyAddtlParameterSource.add(getParametersEmptyDtlBankDetailUpdate(additionaldetails, ifsccode));
 		namedParameterJdbcTemplate.batchUpdate(UPDATE_PAYMENT_BANKDETAIL_EMPTYADDTL_SQL,
 				emptyAddtlParameterSource.toArray(new MapSqlParameterSource[0]));
+		
+		namedParameterJdbcTemplate.batchUpdate(UPDATE_PAYMENT_BANKDETAIL_ARRAYADDTL_SQL,
+				emptyAddtlParameterSource.toArray(new MapSqlParameterSource[0]));
+		
 	}
 }
