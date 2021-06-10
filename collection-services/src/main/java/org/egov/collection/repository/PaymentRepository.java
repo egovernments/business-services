@@ -274,16 +274,34 @@ public class PaymentRepository {
 	public void updatePaymentBankDetail(JsonNode additionaldetails, String ifsccode) {
 		List<MapSqlParameterSource> parameterSource = new ArrayList<>();
 		parameterSource.add(getParametersForBankDetailUpdate(additionaldetails, ifsccode));
+
+		/**
+		 * UPDATE_PAYMENT_BANKDETAIL_SQL query adds the bankdetails data to
+		 * existing object type additionaldetails ex: object type
+		 * additionaldetails data {"isWhatsapp": false }
+		 */
 		namedParameterJdbcTemplate.batchUpdate(UPDATE_PAYMENT_BANKDETAIL_SQL,
 				parameterSource.toArray(new MapSqlParameterSource[0]));
 
 		List<MapSqlParameterSource> emptyAddtlParameterSource = new ArrayList<>();
 		emptyAddtlParameterSource.add(getParametersEmptyDtlBankDetailUpdate(additionaldetails, ifsccode));
+		/**
+		 * UPDATE_PAYMENT_BANKDETAIL_EMPTYADDTL_SQL query update the bankdetails
+		 * to empty/null additionaldetails. ex: empty or 'null'
+		 * additionaldetails data.
+		 */
 		namedParameterJdbcTemplate.batchUpdate(UPDATE_PAYMENT_BANKDETAIL_EMPTYADDTL_SQL,
 				emptyAddtlParameterSource.toArray(new MapSqlParameterSource[0]));
-		
+
+		/**
+		 * UPDATE_PAYMENT_BANKDETAIL_ARRAYADDTL_SQL query adds bankdetails data
+		 * to existing array type additionaldetails. ex: array additional data
+		 * :[{"bankName": "State Bank of India", "branchName": "Chandigarh Main
+		 * Branch"}]
+		 * 
+		 */
 		namedParameterJdbcTemplate.batchUpdate(UPDATE_PAYMENT_BANKDETAIL_ARRAYADDTL_SQL,
 				emptyAddtlParameterSource.toArray(new MapSqlParameterSource[0]));
-		
+
 	}
 }
