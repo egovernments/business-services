@@ -307,7 +307,7 @@ public class BillServicev2 {
 
 		List<Demand> demands = filterMultipleActiveDemands(demandsWithMultipleActive);
 
-		List<BillV2> bills = null;
+		List<BillV2> bills;
 
 		if (!demands.isEmpty())
 			bills = prepareBill(demands, requestInfo);
