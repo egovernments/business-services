@@ -2,6 +2,9 @@ package org.egov.hrms.web.validator;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 import com.jayway.jsonpath.JsonPath;
 import org.apache.commons.lang3.StringUtils;
@@ -523,9 +526,12 @@ public class EmployeeValidator {
 
 	private void validateReactivationDetails(Employee existingEmp, Employee updatedEmployeeData, Map<String, String> errorMap, Map<String, List<String>> mdmsData){
 		if(!CollectionUtils.isEmpty(updatedEmployeeData.getReactivationDetails())) {
+			Date date = new Date();
+			Date  currentDate = Date.from(date.toInstant().atZone(ZoneId.systemDefault())
+					.truncatedTo(ChronoUnit.DAYS).toInstant());
 			for (ReactivationDetails reactivationDetails : updatedEmployeeData.getReactivationDetails()) {
 
-				if(reactivationDetails.getEffectiveFrom() < new Date().getTime())
+				if(reactivationDetails.getEffectiveFrom() < currentDate.getTime())
 					errorMap.put(ErrorConstants.HRMS_UPDATE_REACT_DETAILS_INCORRECT_EFFECTIVEFROM_CODE, ErrorConstants.HRMS_UPDATE_REACT_DETAILS_INCORRECT_EFFECTIVEFROM_MSG);
 
 			}
