@@ -255,6 +255,7 @@ public class EmployeeValidator {
 		validateConsistencyEmployeeDocument(existingEmp, employee, errorMap);
 		validateConsistencyDeactivationDetails(existingEmp, employee, errorMap);
 		validateDeactivationDetails(existingEmp, employee, errorMap, mdmsData);
+		validateReactivationDetails(existingEmp, employee, errorMap, mdmsData);
 	}
 
 	/**
@@ -510,8 +511,23 @@ public class EmployeeValidator {
 				}
 				if(deactivationDetails.getEffectiveFrom() > new Date().getTime())
 					errorMap.put(ErrorConstants.HRMS_UPDATE_DEACT_DETAILS_INCORRECT_EFFECTIVEFROM_CODE, ErrorConstants.HRMS_UPDATE_DEACT_DETAILS_INCORRECT_EFFECTIVEFROM_MSG);
+
+				if(deactivationDetails.getEffectiveFrom() < existingEmp.getDateOfAppointment())
+					errorMap.put(ErrorConstants.HRMS_UPDATE_DEACT_DETAILS_INCORRECT_EFFECTIVEFROM_CODE, ErrorConstants.HRMS_UPDATE_DEACT_DETAILS_INCORRECT_EFFECTIVEFROM_MSG2);
+
 				if (! mdmsData.get(HRMSConstants.HRMS_MDMS_DEACT_REASON_CODE).contains(deactivationDetails.getReasonForDeactivation()))
 					errorMap.put(ErrorConstants.HRMS_INVALID_DEACT_REASON_CODE, ErrorConstants.HRMS_INVALID_DEACT_REASON_MSG);
+			}
+		}
+	}
+
+	private void validateReactivationDetails(Employee existingEmp, Employee updatedEmployeeData, Map<String, String> errorMap, Map<String, List<String>> mdmsData){
+		if(!CollectionUtils.isEmpty(updatedEmployeeData.getReactivationDetails())) {
+			for (ReactivationDetails reactivationDetails : updatedEmployeeData.getReactivationDetails()) {
+
+				if(reactivationDetails.getEffectiveFrom() < new Date().getTime())
+					errorMap.put(ErrorConstants.HRMS_UPDATE_REACT_DETAILS_INCORRECT_EFFECTIVEFROM_CODE, ErrorConstants.HRMS_UPDATE_REACT_DETAILS_INCORRECT_EFFECTIVEFROM_MSG);
+
 			}
 		}
 	}
