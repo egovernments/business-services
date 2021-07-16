@@ -513,7 +513,7 @@ public class EmployeeValidator {
 					errorMap.put(ErrorConstants.HRMS_UPDATE_DEACT_DETAILS_INCORRECT_EFFECTIVEFROM_CODE, ErrorConstants.HRMS_UPDATE_DEACT_DETAILS_INCORRECT_EFFECTIVEFROM_MSG);
 
 				if(deactivationDetails.getEffectiveFrom() < existingEmp.getDateOfAppointment())
-					errorMap.put(ErrorConstants.HRMS_UPDATE_DEACT_DETAILS_INCORRECT_EFFECTIVEFROM_CODE, ErrorConstants.HRMS_UPDATE_DEACT_DETAILS_INCORRECT_EFFECTIVEFROM_MSG2);
+					errorMap.put(ErrorConstants.HRMS_UPDATE_DEACT_DETAILS_INCORRECT_EFFECTIVEFROM_CODE, ErrorConstants.HRMS_UPDATE_DEACT_DETAILS_INCORRECT_EFFECTIVEFROM_MSG);
 
 				if (! mdmsData.get(HRMSConstants.HRMS_MDMS_DEACT_REASON_CODE).contains(deactivationDetails.getReasonForDeactivation()))
 					errorMap.put(ErrorConstants.HRMS_INVALID_DEACT_REASON_CODE, ErrorConstants.HRMS_INVALID_DEACT_REASON_MSG);
