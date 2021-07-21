@@ -80,6 +80,8 @@ public interface IResponseHandler {
 	
 	public static final String XTABLE_COLUMN = "XtableColumnOrder";
 
+	public static final String IS_ROUND_OFF = "isRoundOff";
+
 	public static Double BOUNDARY_VALUE = 50.0;
 
 	/**
