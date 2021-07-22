@@ -145,8 +145,11 @@ public interface IResponseHandler {
 	 * @param values
 	 * @return
 	 */
-	default Double percentageValue(List<Double> values) {
+	default Double percentageValue(List<Double> values, boolean isRoundOff) {
 		double val = (values.get(0)/values.get(1) * 100);
+		if(isRoundOff) {
+			val = Math.round(val);
+		}
 		return (values.size() > 1 && values.get(0) != 0.0 && values.get(1) != 0.0) ? val : 0.0;
 	}
 

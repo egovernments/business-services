@@ -97,14 +97,17 @@ public class MetricChartResponseHandler implements IResponseHandler{
 				if (isRoundOff) {
 					ObjectMapper mapper = new ObjectMapper();
 					JsonNode node = value.get("value");
-					Double roundOff = null;
-					try {
-						roundOff = mapper.treeToValue(node, Double.class);
-					} catch (JsonProcessingException e) {
-						e.printStackTrace();
+					if(node != null) {
+						Double roundOff = null;
+						try {
+							roundOff = mapper.treeToValue(node, Double.class);
+						} catch (JsonProcessingException e) {
+							e.printStackTrace();
+						}
+						int finalvalue = (int) Math.round(roundOff);
+						((ObjectNode) value).put("value", finalvalue);
 					}
-					int finalvalue = (int) Math.round(roundOff);
-					((ObjectNode) value).put("value", finalvalue);
+					
 				}
 				List<JsonNode> valueNodes = value.findValues(VALUE).isEmpty() ? value.findValues(DOC_COUNT)
 						: value.findValues(VALUE);
@@ -121,7 +124,7 @@ public class MetricChartResponseHandler implements IResponseHandler{
 
         String symbol = chartNode.get(IResponseHandler.VALUE_TYPE).asText();
         try{
-            Data data = new Data(chartName, action.equals(PERCENTAGE) && aggrsPaths.size()==2? percentageValue(percentageList) : (totalValues==null || totalValues.isEmpty())? 0.0 :totalValues.stream().reduce(0.0, Double::sum), symbol);
+            Data data = new Data(chartName, action.equals(PERCENTAGE) && aggrsPaths.size()==2? percentageValue(percentageList, isRoundOff) : (totalValues==null || totalValues.isEmpty())? 0.0 :totalValues.stream().reduce(0.0, Double::sum), symbol);
             responseRecorder.put(visualizationCode, request.getModuleLevel(), data);
             dataList.add(data);
             if(chartNode.get(POST_AGGREGATION_THEORY) != null) { 
