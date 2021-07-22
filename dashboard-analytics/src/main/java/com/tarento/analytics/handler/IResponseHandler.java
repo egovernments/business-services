@@ -157,9 +157,12 @@ public interface IResponseHandler {
 	 * @param values
 	 * @return
 	 */
-	default Double getPercentage(Map<String, Double> values, String partField, String wholeField) {
+	default Double getPercentage(Map<String, Double> values, String partField, String wholeField, boolean isRoundOff) {
 
 		double val = (values.get(partField)/ values.get(wholeField) * 100);
+		if(isRoundOff) {
+			val = Math.round(val);
+		}
 		return (values.size() > 1 && values.get(partField) != 0.0 && values.get(wholeField) != 0.0)  ? val: 0.0;
 	}
 
