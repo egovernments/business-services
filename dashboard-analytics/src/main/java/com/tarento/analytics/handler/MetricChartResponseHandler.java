@@ -98,7 +98,7 @@ public class MetricChartResponseHandler implements IResponseHandler{
 					ObjectMapper mapper = new ObjectMapper();
 					JsonNode node = value.get("value");
 					if(node != null) {
-						Double roundOff = null;
+						Double roundOff = 0.0d;
 						try {
 							roundOff = mapper.treeToValue(node, Double.class);
 						} catch (JsonProcessingException e) {
