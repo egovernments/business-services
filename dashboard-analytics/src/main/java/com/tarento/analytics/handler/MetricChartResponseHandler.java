@@ -104,8 +104,10 @@ public class MetricChartResponseHandler implements IResponseHandler{
 						} catch (JsonProcessingException e) {
 							e.printStackTrace();
 						}
-						int finalvalue = (int) Math.round(roundOff);
-						((ObjectNode) value).put("value", finalvalue);
+						if(roundOff!=null) {
+							int finalvalue = (int) Math.round(roundOff);
+							((ObjectNode) value).put("value", finalvalue);
+						}
 					}
 					
 				}
