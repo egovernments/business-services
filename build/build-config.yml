@@ -33,7 +33,7 @@ config:
       - work-dir: "collection-services/src/main/resources/db"
         image-name: "collection-services-db"
 
-  - name: "builds/digit-impel-builds/business-services/egf-instrument"
+  - name: "builds/business-services/egf-instrument"
     build:
       - work-dir: "egf-instrument"
         image-name: "egf-instrument"
